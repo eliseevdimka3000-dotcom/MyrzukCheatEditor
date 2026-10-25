@@ -1,0 +1,715 @@
+local P=game.Players.LocalPlayer
+local UIS=game:GetService("UserInputService")
+local RS=game:GetService("RunService")
+local TS=game:GetService("TweenService")
+
+do
+    if hookmetamethod and getnamecallmethod and newcclosure then
+        local mt=getrawmetatable(game)
+        local old=mt.__namecall
+        setreadonly(mt,false)
+        mt.__namecall=newcclosure(function(s,...)
+            if getnamecallmethod()=="Kick" and s==P then return end
+            return old(s,...)
+        end)
+        setreadonly(mt,true)
+    end
+end
+
+local origSpeed=16
+do
+    local c=P.Character
+    if c then
+        local h=c:FindFirstChildOfClass("Humanoid")
+        if h then origSpeed=h.WalkSpeed end
+    end
+end
+
+local curSpeed=origSpeed
+local lastSpeed=origSpeed
+local speedOn=true
+local lastKnown=origSpeed
+
+local flyOn=false
+local flySpd=50
+local flyConn
+local savedGravity=workspace.Gravity
+
+local noclipOn=false
+local noclipConn
+local noclipKb=nil
+local waitNoclip=false
+
+local kbApply,kbToggle,kbRestore=nil,nil,nil
+local kbFly,kbFlyApply=nil,nil
+local waitApply,waitToggle,waitRestore=false,false,false
+local waitFly,waitFlyApply=false,false
+
+local KD={Zero="0",One="1",Two="2",Three="3",Four="4",Five="5",Six="6",Seven="7",Eight="8",Nine="9",KeypadZero="N0",KeypadOne="N1",KeypadTwo="N2",KeypadThree="N3",KeypadFour="N4",KeypadFive="N5",KeypadSix="N6",KeypadSeven="N7",KeypadEight="N8",KeypadNine="N9",Minus="-",Equals="="}
+local function kn(k) return KD[k.Name] or k.Name end
+
+local BG=Color3.fromRGB(14,14,18)
+local IT=Color3.fromRGB(34,34,44)
+local AC=Color3.fromRGB(140,80,255)
+local AC2=Color3.fromRGB(180,120,255)
+local TX=Color3.fromRGB(235,235,245)
+local TD=Color3.fromRGB(140,140,155)
+local RD=Color3.fromRGB(200,40,40)
+local GR=Color3.fromRGB(60,160,60)
+local BL=Color3.fromRGB(60,120,200)
+
+local SG=Instance.new("ScreenGui")
+SG.Name="CheatEditor"
+SG.ResetOnSpawn=false
+SG.IgnoreGuiInset=true
+SG.Parent=game.CoreGui
+
+local F=Instance.new("Frame")
+F.Size=UDim2.new(0,260,0,360)
+F.Position=UDim2.new(1,-270,0.5,-180)
+F.BackgroundColor3=BG
+F.BorderSizePixel=0
+F.Parent=SG
+local fc=Instance.new("UICorner") fc.CornerRadius=UDim.new(0,8) fc.Parent=F
+local fst=Instance.new("UIStroke") fst.Color=AC fst.Thickness=1 fst.Transparency=0.5 fst.Parent=F
+
+local T=Instance.new("TextLabel")
+T.Size=UDim2.new(1,0,0,32)
+T.BackgroundColor3=Color3.fromRGB(18,18,24)
+T.Text="CHEAT EDITOR"
+T.TextColor3=AC2
+T.Font=Enum.Font.GothamBold
+T.TextSize=13
+T.BorderSizePixel=0
+T.Parent=F
+local tcn=Instance.new("UICorner") tcn.CornerRadius=UDim.new(0,8) tcn.Parent=T
+
+local STab=Instance.new("TextButton")
+STab.Size=UDim2.new(0.3,0,0,24)
+STab.Position=UDim2.new(0.03,0,0,38)
+STab.BackgroundColor3=AC
+STab.Text="Speed"
+STab.TextColor3=Color3.fromRGB(255,255,255)
+STab.Font=Enum.Font.GothamBold
+STab.TextSize=11
+STab.BorderSizePixel=0
+STab.Parent=F
+local stc=Instance.new("UICorner") stc.CornerRadius=UDim.new(0,5) stc.Parent=STab
+
+local FTab=Instance.new("TextButton")
+FTab.Size=UDim2.new(0.3,0,0,24)
+FTab.Position=UDim2.new(0.35,0,0,38)
+FTab.BackgroundColor3=IT
+FTab.Text="Fly"
+FTab.TextColor3=TD
+FTab.Font=Enum.Font.GothamBold
+FTab.TextSize=11
+FTab.BorderSizePixel=0
+FTab.Parent=F
+local ftc=Instance.new("UICorner") ftc.CornerRadius=UDim.new(0,5) ftc.Parent=FTab
+
+local NTab=Instance.new("TextButton")
+NTab.Size=UDim2.new(0.3,0,0,24)
+NTab.Position=UDim2.new(0.67,0,0,38)
+NTab.BackgroundColor3=IT
+NTab.Text="Noclip"
+NTab.TextColor3=TD
+NTab.Font=Enum.Font.GothamBold
+NTab.TextSize=11
+NTab.BorderSizePixel=0
+NTab.Parent=F
+local ntc=Instance.new("UICorner") ntc.CornerRadius=UDim.new(0,5) ntc.Parent=NTab
+
+local CP=Instance.new("Frame")
+CP.Size=UDim2.new(1,0,1,-70)
+CP.Position=UDim2.new(0,0,0,70)
+CP.BackgroundTransparency=1
+CP.Parent=F
+
+local SP=Instance.new("Frame")
+SP.Size=UDim2.new(1,0,1,0)
+SP.BackgroundTransparency=1
+SP.Visible=true
+SP.Parent=CP
+
+local FP=Instance.new("Frame")
+FP.Size=UDim2.new(1,0,1,0)
+FP.BackgroundTransparency=1
+FP.Visible=false
+FP.Parent=CP
+
+local NP=Instance.new("Frame")
+NP.Size=UDim2.new(1,0,1,0)
+NP.BackgroundTransparency=1
+NP.Visible=false
+NP.Parent=CP
+
+local SL=Instance.new("TextLabel")
+SL.Size=UDim2.new(0.9,0,0,20)
+SL.Position=UDim2.new(0.05,0,0,6)
+SL.BackgroundTransparency=1
+SL.Text="Current: "..math.floor(origSpeed)
+SL.TextColor3=TX
+SL.Font=Enum.Font.GothamBold
+SL.TextSize=13
+SL.TextXAlignment=Enum.TextXAlignment.Left
+SL.Parent=SP
+
+local IB=Instance.new("TextBox")
+IB.Size=UDim2.new(0.9,0,0,30)
+IB.Position=UDim2.new(0.05,0,0,32)
+IB.BackgroundColor3=IT
+IB.Text=tostring(math.floor(origSpeed))
+IB.TextColor3=TX
+IB.Font=Enum.Font.GothamBold
+IB.TextSize=13
+IB.ClearTextOnFocus=false
+IB.BorderSizePixel=0
+IB.Parent=SP
+local ibc=Instance.new("UICorner") ibc.CornerRadius=UDim.new(0,5) ibc.Parent=IB
+
+local TR=Instance.new("Frame")
+TR.Size=UDim2.new(0.9,0,0,28)
+TR.Position=UDim2.new(0.05,0,0,72)
+TR.BackgroundColor3=IT
+TR.BorderSizePixel=0
+TR.Parent=SP
+local trc=Instance.new("UICorner") trc.CornerRadius=UDim.new(0,5) trc.Parent=TR
+
+local TL=Instance.new("TextLabel")
+TL.Size=UDim2.new(1,-50,1,0)
+TL.Position=UDim2.new(0,8,0,0)
+TL.BackgroundTransparency=1
+TL.Text="Enable Speed"
+TL.TextColor3=TX
+TL.Font=Enum.Font.Gotham
+TL.TextSize=12
+TL.TextXAlignment=Enum.TextXAlignment.Left
+TL.Parent=TR
+
+local TRK=Instance.new("Frame")
+TRK.Size=UDim2.new(0,34,0,16)
+TRK.Position=UDim2.new(1,-42,0.5,-8)
+TRK.BackgroundColor3=AC
+TRK.BorderSizePixel=0
+TRK.Parent=TR
+local trkc=Instance.new("UICorner") trkc.CornerRadius=UDim.new(1,0) trkc.Parent=TRK
+
+local KN=Instance.new("Frame")
+KN.Size=UDim2.new(0,12,0,12)
+KN.Position=UDim2.new(1,-14,0.5,-6)
+KN.BackgroundColor3=Color3.fromRGB(255,255,255)
+KN.BorderSizePixel=0
+KN.Parent=TRK
+local knc=Instance.new("UICorner") knc.CornerRadius=UDim.new(1,0) knc.Parent=KN
+
+local TKB=Instance.new("TextButton")
+TKB.Size=UDim2.new(0.9,0,0,24)
+TKB.Position=UDim2.new(0.05,0,0,104)
+TKB.BackgroundColor3=IT
+TKB.Text="Enable Speed: [ ]"
+TKB.TextColor3=TD
+TKB.Font=Enum.Font.Gotham
+TKB.TextSize=11
+TKB.BorderSizePixel=0
+TKB.Parent=SP
+local tkbc=Instance.new("UICorner") tkbc.CornerRadius=UDim.new(0,5) tkbc.Parent=TKB
+
+local AB=Instance.new("TextButton")
+AB.Size=UDim2.new(0.9,0,0,28)
+AB.Position=UDim2.new(0.05,0,0,134)
+AB.BackgroundColor3=GR
+AB.Text="Apply Speed"
+AB.TextColor3=Color3.fromRGB(255,255,255)
+AB.Font=Enum.Font.GothamBold
+AB.TextSize=12
+AB.BorderSizePixel=0
+AB.Parent=SP
+local abc=Instance.new("UICorner") abc.CornerRadius=UDim.new(0,5) abc.Parent=AB
+
+local AKB=Instance.new("TextButton")
+AKB.Size=UDim2.new(0.9,0,0,24)
+AKB.Position=UDim2.new(0.05,0,0,166)
+AKB.BackgroundColor3=IT
+AKB.Text="Apply Keybind: [ ]"
+AKB.TextColor3=TD
+AKB.Font=Enum.Font.Gotham
+AKB.TextSize=11
+AKB.BorderSizePixel=0
+AKB.Parent=SP
+local akbc=Instance.new("UICorner") akbc.CornerRadius=UDim.new(0,5) akbc.Parent=AKB
+
+local RB=Instance.new("TextButton")
+RB.Size=UDim2.new(0.9,0,0,28)
+RB.Position=UDim2.new(0.05,0,0,196)
+RB.BackgroundColor3=IT
+RB.Text="Restore ("..math.floor(origSpeed)..")"
+RB.TextColor3=TX
+RB.Font=Enum.Font.Gotham
+RB.TextSize=12
+RB.BorderSizePixel=0
+RB.Parent=SP
+local rbc=Instance.new("UICorner") rbc.CornerRadius=UDim.new(0,5) rbc.Parent=RB
+
+local RKB=Instance.new("TextButton")
+RKB.Size=UDim2.new(0.9,0,0,24)
+RKB.Position=UDim2.new(0.05,0,0,228)
+RKB.BackgroundColor3=IT
+RKB.Text="Restore Keybind: [ ]"
+RKB.TextColor3=TD
+RKB.Font=Enum.Font.Gotham
+RKB.TextSize=11
+RKB.BorderSizePixel=0
+RKB.Parent=SP
+local rkbc=Instance.new("UICorner") rkbc.CornerRadius=UDim.new(0,5) rkbc.Parent=RKB
+
+local FL=Instance.new("TextLabel")
+FL.Size=UDim2.new(0.9,0,0,20)
+FL.Position=UDim2.new(0.05,0,0,6)
+FL.BackgroundTransparency=1
+FL.Text="Fly Speed: "..math.floor(flySpd)
+FL.TextColor3=TX
+FL.Font=Enum.Font.GothamBold
+FL.TextSize=13
+FL.TextXAlignment=Enum.TextXAlignment.Left
+FL.Parent=FP
+
+local FIB=Instance.new("TextBox")
+FIB.Size=UDim2.new(0.9,0,0,30)
+FIB.Position=UDim2.new(0.05,0,0,32)
+FIB.BackgroundColor3=IT
+FIB.Text=tostring(math.floor(flySpd))
+FIB.TextColor3=TX
+FIB.Font=Enum.Font.GothamBold
+FIB.TextSize=13
+FIB.ClearTextOnFocus=false
+FIB.BorderSizePixel=0
+FIB.Parent=FP
+local fibc=Instance.new("UICorner") fibc.CornerRadius=UDim.new(0,5) fibc.Parent=FIB
+
+local FTR=Instance.new("Frame")
+FTR.Size=UDim2.new(0.9,0,0,28)
+FTR.Position=UDim2.new(0.05,0,0,72)
+FTR.BackgroundColor3=IT
+FTR.BorderSizePixel=0
+FTR.Parent=FP
+local ftrc=Instance.new("UICorner") ftrc.CornerRadius=UDim.new(0,5) ftrc.Parent=FTR
+
+local FTL=Instance.new("TextLabel")
+FTL.Size=UDim2.new(1,-50,1,0)
+FTL.Position=UDim2.new(0,8,0,0)
+FTL.BackgroundTransparency=1
+FTL.Text="Enable Fly"
+FTL.TextColor3=TX
+FTL.Font=Enum.Font.Gotham
+FTL.TextSize=12
+FTL.TextXAlignment=Enum.TextXAlignment.Left
+FTL.Parent=FTR
+
+local FTRK=Instance.new("Frame")
+FTRK.Size=UDim2.new(0,34,0,16)
+FTRK.Position=UDim2.new(1,-42,0.5,-8)
+FTRK.BackgroundColor3=Color3.fromRGB(60,60,70)
+FTRK.BorderSizePixel=0
+FTRK.Parent=FTR
+local ftrkc=Instance.new("UICorner") ftrkc.CornerRadius=UDim.new(1,0) ftrkc.Parent=FTRK
+
+local FKN=Instance.new("Frame")
+FKN.Size=UDim2.new(0,12,0,12)
+FKN.Position=UDim2.new(0,2,0.5,-6)
+FKN.BackgroundColor3=Color3.fromRGB(255,255,255)
+FKN.BorderSizePixel=0
+FKN.Parent=FTRK
+local fknc=Instance.new("UICorner") fknc.CornerRadius=UDim.new(1,0) fknc.Parent=FKN
+
+local FTKB=Instance.new("TextButton")
+FTKB.Size=UDim2.new(0.9,0,0,24)
+FTKB.Position=UDim2.new(0.05,0,0,104)
+FTKB.BackgroundColor3=IT
+FTKB.Text="Enable Fly: [ ]"
+FTKB.TextColor3=TD
+FTKB.Font=Enum.Font.Gotham
+FTKB.TextSize=11
+FTKB.BorderSizePixel=0
+FTKB.Parent=FP
+local ftkbc=Instance.new("UICorner") ftkbc.CornerRadius=UDim.new(0,5) ftkbc.Parent=FTKB
+
+local FAB=Instance.new("TextButton")
+FAB.Size=UDim2.new(0.9,0,0,28)
+FAB.Position=UDim2.new(0.05,0,0,134)
+FAB.BackgroundColor3=BL
+FAB.Text="Apply Fly Speed"
+FAB.TextColor3=Color3.fromRGB(255,255,255)
+FAB.Font=Enum.Font.GothamBold
+FAB.TextSize=12
+FAB.BorderSizePixel=0
+FAB.Parent=FP
+local fabc=Instance.new("UICorner") fabc.CornerRadius=UDim.new(0,5) fabc.Parent=FAB
+
+local FAKB=Instance.new("TextButton")
+FAKB.Size=UDim2.new(0.9,0,0,24)
+FAKB.Position=UDim2.new(0.05,0,0,166)
+FAKB.BackgroundColor3=IT
+FAKB.Text="Fly Apply Keybind: [ ]"
+FAKB.TextColor3=TD
+FAKB.Font=Enum.Font.Gotham
+FAKB.TextSize=11
+FAKB.BorderSizePixel=0
+FAKB.Parent=FP
+local fakbc=Instance.new("UICorner") fakbc.CornerRadius=UDim.new(0,5) fakbc.Parent=FAKB
+
+local NL=Instance.new("TextLabel")
+NL.Size=UDim2.new(0.9,0,0,20)
+NL.Position=UDim2.new(0.05,0,0,6)
+NL.BackgroundTransparency=1
+NL.Text="Noclip"
+NL.TextColor3=AC2
+NL.Font=Enum.Font.GothamBold
+NL.TextSize=13
+NL.TextXAlignment=Enum.TextXAlignment.Left
+NL.Parent=NP
+
+local NCRow=Instance.new("Frame")
+NCRow.Size=UDim2.new(0.9,0,0,28)
+NCRow.Position=UDim2.new(0.05,0,0,32)
+NCRow.BackgroundColor3=IT
+NCRow.BorderSizePixel=0
+NCRow.Parent=NP
+local ncrc=Instance.new("UICorner") ncrc.CornerRadius=UDim.new(0,5) ncrc.Parent=NCRow
+
+local NCL=Instance.new("TextLabel")
+NCL.Size=UDim2.new(1,-50,1,0)
+NCL.Position=UDim2.new(0,8,0,0)
+NCL.BackgroundTransparency=1
+NCL.Text="Enable Noclip"
+NCL.TextColor3=TX
+NCL.Font=Enum.Font.Gotham
+NCL.TextSize=12
+NCL.TextXAlignment=Enum.TextXAlignment.Left
+NCL.Parent=NCRow
+
+local NCTRK=Instance.new("Frame")
+NCTRK.Size=UDim2.new(0,34,0,16)
+NCTRK.Position=UDim2.new(1,-42,0.5,-8)
+NCTRK.BackgroundColor3=Color3.fromRGB(60,60,70)
+NCTRK.BorderSizePixel=0
+NCTRK.Parent=NCRow
+local nctrkc=Instance.new("UICorner") nctrkc.CornerRadius=UDim.new(1,0) nctrkc.Parent=NCTRK
+
+local NCKN=Instance.new("Frame")
+NCKN.Size=UDim2.new(0,12,0,12)
+NCKN.Position=UDim2.new(0,2,0.5,-6)
+NCKN.BackgroundColor3=Color3.fromRGB(255,255,255)
+NCKN.BorderSizePixel=0
+NCKN.Parent=NCTRK
+local ncknc=Instance.new("UICorner") ncknc.CornerRadius=UDim.new(1,0) ncknc.Parent=NCKN
+
+local NCKB=Instance.new("TextButton")
+NCKB.Size=UDim2.new(0.9,0,0,24)
+NCKB.Position=UDim2.new(0.05,0,0,68)
+NCKB.BackgroundColor3=IT
+NCKB.Text="Noclip Keybind: [ ]"
+NCKB.TextColor3=TD
+NCKB.Font=Enum.Font.Gotham
+NCKB.TextSize=11
+NCKB.BorderSizePixel=0
+NCKB.Parent=NP
+local nckbc=Instance.new("UICorner") nckbc.CornerRadius=UDim.new(0,5) nckbc.Parent=NCKB
+
+local DB=Instance.new("TextButton")
+DB.Size=UDim2.new(0.9,0,0,26)
+DB.Position=UDim2.new(0.05,0,0,328)
+DB.BackgroundColor3=RD
+DB.Text="Destroy"
+DB.TextColor3=Color3.fromRGB(255,255,255)
+DB.Font=Enum.Font.GothamBold
+DB.TextSize=12
+DB.BorderSizePixel=0
+DB.Parent=F
+local dbc=Instance.new("UICorner") dbc.CornerRadius=UDim.new(0,5) dbc.Parent=DB
+
+local function hideAll()
+    SP.Visible=false FP.Visible=false NP.Visible=false
+    STab.BackgroundColor3=IT STab.TextColor3=TD
+    FTab.BackgroundColor3=IT FTab.TextColor3=TD
+    NTab.BackgroundColor3=IT NTab.TextColor3=TD
+end
+STab.MouseButton1Click:Connect(function() hideAll() SP.Visible=true STab.BackgroundColor3=AC STab.TextColor3=Color3.fromRGB(255,255,255) end)
+FTab.MouseButton1Click:Connect(function() hideAll() FP.Visible=true FTab.BackgroundColor3=AC FTab.TextColor3=Color3.fromRGB(255,255,255) end)
+NTab.MouseButton1Click:Connect(function() hideAll() NP.Visible=true NTab.BackgroundColor3=AC NTab.TextColor3=Color3.fromRGB(255,255,255) end)
+
+local function applySpeed()
+    local c=P.Character
+    if c then
+        local h=c:FindFirstChildOfClass("Humanoid")
+        if h then h.WalkSpeed=curSpeed end
+    end
+end
+local function updT() TKB.Text="Enable Speed: "..(kbToggle and ("["..kn(kbToggle).."]") or "[ ]") TKB.TextColor3=kbToggle and TX or TD end
+local function updA() AKB.Text="Apply Keybind: "..(kbApply and ("["..kn(kbApply).."]") or "[ ]") AKB.TextColor3=kbApply and TX or TD end
+local function updR() RKB.Text="Restore Keybind: "..(kbRestore and ("["..kn(kbRestore).."]") or "[ ]") RKB.TextColor3=kbRestore and TX or TD end
+local function doRestore()
+    curSpeed=origSpeed lastSpeed=origSpeed
+    SL.Text="Current: "..math.floor(origSpeed)
+    IB.Text=tostring(math.floor(origSpeed))
+    if speedOn then applySpeed() end
+end
+local function toggleSpeed()
+    speedOn=not speedOn
+    TRK.BackgroundColor3=speedOn and AC or Color3.fromRGB(60,60,70)
+    TS:Create(KN,TweenInfo.new(0.15),{Position=speedOn and UDim2.new(1,-14,0.5,-6) or UDim2.new(0,2,0.5,-6)}):Play()
+    if speedOn then
+        curSpeed=lastSpeed
+        SL.Text="Current: "..math.floor(curSpeed)
+        applySpeed()
+    else
+        lastSpeed=curSpeed
+        curSpeed=origSpeed
+        SL.Text="Current: "..math.floor(origSpeed)
+        applySpeed()
+    end
+end
+TR.InputBegan:Connect(function(i)
+    if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then toggleSpeed() end
+end)
+AB.MouseButton1Click:Connect(function()
+    local n=tonumber(IB.Text)
+    if n then
+        curSpeed=n lastSpeed=n
+        SL.Text="Current: "..math.floor(curSpeed)
+        if speedOn then applySpeed() end
+    else IB.Text=tostring(math.floor(curSpeed)) end
+end)
+RB.MouseButton1Click:Connect(doRestore)
+TKB.MouseButton1Click:Connect(function()
+    if waitToggle then waitToggle=false updT() TKB.BackgroundColor3=IT
+    else waitApply=false waitRestore=false waitToggle=true TKB.Text="Enable Speed: [...]" TKB.BackgroundColor3=AC TKB.TextColor3=Color3.fromRGB(255,255,255) end
+end)
+AKB.MouseButton1Click:Connect(function()
+    if waitApply then waitApply=false updA() AKB.BackgroundColor3=IT
+    else waitToggle=false waitRestore=false waitApply=true AKB.Text="Apply Keybind: [...]" AKB.BackgroundColor3=AC AKB.TextColor3=Color3.fromRGB(255,255,255) end
+end)
+RKB.MouseButton1Click:Connect(function()
+    if waitRestore then waitRestore=false updR() RKB.BackgroundColor3=IT
+    else waitToggle=false waitApply=false waitRestore=true RKB.Text="Restore Keybind: [...]" RKB.BackgroundColor3=AC RKB.TextColor3=Color3.fromRGB(255,255,255) end
+end)
+
+local function stopFly()
+    if flyConn then flyConn:Disconnect() flyConn=nil end
+    workspace.Gravity=savedGravity
+    local c=P.Character
+    if c then
+        local h=c:FindFirstChildOfClass("Humanoid")
+        if h then
+            h.PlatformStand=false
+            pcall(function() h:ChangeState(Enum.HumanoidStateType.GettingUp) end)
+        end
+    end
+end
+local function startFly()
+    stopFly()
+    local c=P.Character
+    if not c then return end
+    local root=c:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    local hum=c:FindFirstChildOfClass("Humanoid")
+    if not hum then return end
+
+    hum.PlatformStand=true
+    savedGravity=workspace.Gravity
+    workspace.Gravity=0
+
+    flyConn=RS.RenderStepped:Connect(function(dt)
+        if not flyOn then return end
+        local cc=P.Character
+        if not cc then return end
+        local rr=cc:FindFirstChild("HumanoidRootPart")
+        if not rr then return end
+        local cam=workspace.CurrentCamera
+
+        local dir=Vector3.zero
+        if UIS:IsKeyDown(Enum.KeyCode.W) then dir=dir+cam.CFrame.LookVector end
+        if UIS:IsKeyDown(Enum.KeyCode.S) then dir=dir-cam.CFrame.LookVector end
+        if UIS:IsKeyDown(Enum.KeyCode.A) then dir=dir-cam.CFrame.RightVector end
+        if UIS:IsKeyDown(Enum.KeyCode.D) then dir=dir+cam.CFrame.RightVector end
+        if UIS:IsKeyDown(Enum.KeyCode.Space) then dir=dir+Vector3.new(0,1,0) end
+        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then dir=dir-Vector3.new(0,1,0) end
+
+        local currentPos=rr.Position
+        local newPos=currentPos
+        if dir.Magnitude>0 then
+            newPos=currentPos+dir.Unit*flySpd*dt
+        end
+
+        rr.CFrame=CFrame.new(newPos, newPos+cam.CFrame.LookVector)
+        rr.AssemblyLinearVelocity=Vector3.zero
+        rr.AssemblyAngularVelocity=Vector3.zero
+    end)
+end
+local function updFT() FTKB.Text="Enable Fly: "..(kbFly and ("["..kn(kbFly).."]") or "[ ]") FTKB.TextColor3=kbFly and TX or TD end
+local function updFA() FAKB.Text="Fly Apply Keybind: "..(kbFlyApply and ("["..kn(kbFlyApply).."]") or "[ ]") FAKB.TextColor3=kbFlyApply and TX or TD end
+local function toggleFly()
+    flyOn=not flyOn
+    FTRK.BackgroundColor3=flyOn and AC or Color3.fromRGB(60,60,70)
+    TS:Create(FKN,TweenInfo.new(0.15),{Position=flyOn and UDim2.new(1,-14,0.5,-6) or UDim2.new(0,2,0.5,-6)}):Play()
+    if flyOn then startFly() else stopFly() end
+end
+FTR.InputBegan:Connect(function(i)
+    if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then toggleFly() end
+end)
+FAB.MouseButton1Click:Connect(function()
+    local n=tonumber(FIB.Text)
+    if n then flySpd=n FL.Text="Fly Speed: "..math.floor(flySpd)
+    else FIB.Text=tostring(math.floor(flySpd)) end
+end)
+FTKB.MouseButton1Click:Connect(function()
+    if waitFly then waitFly=false updFT() FTKB.BackgroundColor3=IT
+    else waitFlyApply=false waitFly=true FTKB.Text="Enable Fly: [...]" FTKB.BackgroundColor3=AC FTKB.TextColor3=Color3.fromRGB(255,255,255) end
+end)
+FAKB.MouseButton1Click:Connect(function()
+    if waitFlyApply then waitFlyApply=false updFA() FAKB.BackgroundColor3=IT
+    else waitFly=false waitFlyApply=true FAKB.Text="Fly Apply Keybind: [...]" FAKB.BackgroundColor3=AC FAKB.TextColor3=Color3.fromRGB(255,255,255) end
+end)
+
+local function updNC() NCKB.Text="Noclip Keybind: "..(noclipKb and ("["..kn(noclipKb).."]") or "[ ]") NCKB.TextColor3=noclipKb and TX or TD end
+local function toggleNoclip()
+    noclipOn=not noclipOn
+    NCTRK.BackgroundColor3=noclipOn and AC or Color3.fromRGB(60,60,70)
+    TS:Create(NCKN,TweenInfo.new(0.15),{Position=noclipOn and UDim2.new(1,-14,0.5,-6) or UDim2.new(0,2,0.5,-6)}):Play()
+    if noclipOn then
+        noclipConn=RS.Heartbeat:Connect(function()
+            if not noclipOn then return end
+            local c=P.Character
+            if not c then return end
+            for _,part in ipairs(c:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    if not part.Name:lower():find("floor") and not part.Name:lower():find("ground") and not part.Name:lower():find("baseplate") then
+                        part.CanCollide=false
+                    end
+                end
+            end
+        end)
+    else
+        if noclipConn then noclipConn:Disconnect() noclipConn=nil end
+        local c=P.Character
+        if c then
+            for _,part in ipairs(c:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide=true end
+            end
+        end
+    end
+end
+NCRow.InputBegan:Connect(function(i)
+    if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then toggleNoclip() end
+end)
+NCKB.MouseButton1Click:Connect(function()
+    if waitNoclip then waitNoclip=false updNC() NCKB.BackgroundColor3=IT
+    else waitNoclip=true NCKB.Text="Noclip Keybind: [...]" NCKB.BackgroundColor3=AC NCKB.TextColor3=Color3.fromRGB(255,255,255) end
+end)
+
+UIS.InputBegan:Connect(function(i,gpe)
+    if gpe then return end
+    if waitToggle then
+        if i.UserInputType==Enum.UserInputType.Keyboard then
+            local nk=i.KeyCode
+            if kbApply==nk then kbApply=nil updA() end
+            if kbRestore==nk then kbRestore=nil updR() end
+            kbToggle=nk waitToggle=false updT() TKB.BackgroundColor3=IT
+        end
+        return
+    end
+    if waitApply then
+        if i.UserInputType==Enum.UserInputType.Keyboard then
+            local nk=i.KeyCode
+            if kbToggle==nk then kbToggle=nil updT() end
+            if kbRestore==nk then kbRestore=nil updR() end
+            kbApply=nk waitApply=false updA() AKB.BackgroundColor3=IT
+        end
+        return
+    end
+    if waitRestore then
+        if i.UserInputType==Enum.UserInputType.Keyboard then
+            local nk=i.KeyCode
+            if kbToggle==nk then kbToggle=nil updT() end
+            if kbApply==nk then kbApply=nil updA() end
+            kbRestore=nk waitRestore=false updR() RKB.BackgroundColor3=IT
+        end
+        return
+    end
+    if waitFly then
+        if i.UserInputType==Enum.UserInputType.Keyboard then kbFly=i.KeyCode waitFly=false updFT() FTKB.BackgroundColor3=IT end
+        return
+    end
+    if waitFlyApply then
+        if i.UserInputType==Enum.UserInputType.Keyboard then kbFlyApply=i.KeyCode waitFlyApply=false updFA() FAKB.BackgroundColor3=IT end
+        return
+    end
+    if waitNoclip then
+        if i.UserInputType==Enum.UserInputType.Keyboard then noclipKb=i.KeyCode waitNoclip=false updNC() NCKB.BackgroundColor3=IT end
+        return
+    end
+    if kbApply and i.KeyCode==kbApply then
+        local n=tonumber(IB.Text)
+        if n then
+            curSpeed=n lastSpeed=n
+            SL.Text="Current: "..math.floor(curSpeed)
+            if speedOn then applySpeed() end
+        end
+    end
+    if kbToggle and i.KeyCode==kbToggle then toggleSpeed() end
+    if kbRestore and i.KeyCode==kbRestore then doRestore() end
+    if kbFly and i.KeyCode==kbFly then toggleFly() end
+    if noclipKb and i.KeyCode==noclipKb then toggleNoclip() end
+    if kbFlyApply and i.KeyCode==kbFlyApply then
+        local n=tonumber(FIB.Text)
+        if n then flySpd=n FL.Text="Fly Speed: "..math.floor(flySpd) end
+    end
+end)
+
+RS.Heartbeat:Connect(function()
+    local c=P.Character
+    if not c then return end
+    local h=c:FindFirstChildOfClass("Humanoid")
+    if not h then return end
+    if speedOn then
+        if h.WalkSpeed~=curSpeed then h.WalkSpeed=curSpeed end
+    else
+        if h.WalkSpeed~=lastKnown then
+            lastKnown=h.WalkSpeed origSpeed=h.WalkSpeed curSpeed=h.WalkSpeed
+            SL.Text="Current: "..math.floor(h.WalkSpeed)
+            IB.Text=tostring(math.floor(h.WalkSpeed))
+            RB.Text="Restore ("..math.floor(h.WalkSpeed)..")"
+        end
+    end
+end)
+
+P.CharacterAdded:Connect(function(nc)
+    task.wait(1)
+    local h=nc:FindFirstChildOfClass("Humanoid")
+    if h then
+        origSpeed=h.WalkSpeed lastKnown=h.WalkSpeed
+        if speedOn then h.WalkSpeed=curSpeed
+        else
+            curSpeed=h.WalkSpeed
+            SL.Text="Current: "..math.floor(h.WalkSpeed)
+            IB.Text=tostring(math.floor(h.WalkSpeed))
+            RB.Text="Restore ("..math.floor(h.WalkSpeed)..")"
+        end
+    end
+    if flyOn then flyOn=false toggleFly() end
+    if noclipOn then noclipOn=false toggleNoclip() end
+end)
+
+DB.MouseButton1Click:Connect(function()
+    local c=P.Character
+    if c then
+        local h=c:FindFirstChildOfClass("Humanoid")
+        if h then h.WalkSpeed=origSpeed end
+    end
+    stopFly()
+    if noclipConn then noclipConn:Disconnect() end
+    SG:Destroy()
+end)
+
+UIS.MouseIconEnabled=true
+UIS.MouseBehavior=Enum.MouseBehavior.Default
