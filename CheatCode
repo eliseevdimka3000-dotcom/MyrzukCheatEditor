@@ -57,6 +57,7 @@ local TD=Color3.fromRGB(140,140,155)
 local RD=Color3.fromRGB(200,40,40)
 local GR=Color3.fromRGB(60,160,60)
 local BL=Color3.fromRGB(60,120,200)
+local YL=Color3.fromRGB(220,200,40)
 
 local SG=Instance.new("ScreenGui")
 SG.Name="CheatEditor"
@@ -65,10 +66,11 @@ SG.IgnoreGuiInset=true
 SG.Parent=game.CoreGui
 
 local F=Instance.new("Frame")
-F.Size=UDim2.new(0,260,0,360)
-F.Position=UDim2.new(1,-270,0.5,-180)
+F.Size=UDim2.new(0,260,0,390)
+F.Position=UDim2.new(1,-270,0.5,-195)
 F.BackgroundColor3=BG
 F.BorderSizePixel=0
+F.Active=true
 F.Parent=SG
 local fc=Instance.new("UICorner") fc.CornerRadius=UDim.new(0,8) fc.Parent=F
 local fst=Instance.new("UIStroke") fst.Color=AC fst.Thickness=1 fst.Transparency=0.5 fst.Parent=F
@@ -76,13 +78,37 @@ local fst=Instance.new("UIStroke") fst.Color=AC fst.Thickness=1 fst.Transparency
 local T=Instance.new("TextLabel")
 T.Size=UDim2.new(1,0,0,32)
 T.BackgroundColor3=Color3.fromRGB(18,18,24)
-T.Text="CHEAT EDITOR"
+T.Text="CHEAT EDITOR  [drag]"
 T.TextColor3=AC2
 T.Font=Enum.Font.GothamBold
 T.TextSize=13
 T.BorderSizePixel=0
+T.Active=true
 T.Parent=F
 local tcn=Instance.new("UICorner") tcn.CornerRadius=UDim.new(0,8) tcn.Parent=T
+
+local dragging=false
+local dragStart
+local startPos
+
+T.InputBegan:Connect(function(input)
+    if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+        dragging=true
+        dragStart=input.Position
+        startPos=F.Position
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
+        local delta=input.Position-dragStart
+        F.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+delta.X,startPos.Y.Scale,startPos.Y.Offset+delta.Y)
+    end
+end)
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+        dragging=false
+    end
+end)
 
 local STab=Instance.new("TextButton")
 STab.Size=UDim2.new(0.3,0,0,24)
@@ -427,6 +453,83 @@ DB.TextSize=12
 DB.BorderSizePixel=0
 DB.Parent=F
 local dbc=Instance.new("UICorner") dbc.CornerRadius=UDim.new(0,5) dbc.Parent=DB
+
+local UB=Instance.new("TextButton")
+UB.Size=UDim2.new(0.9,0,0,26)
+UB.Position=UDim2.new(0.05,0,0,358)
+UB.BackgroundColor3=YL
+UB.Text="Updates"
+UB.TextColor3=Color3.fromRGB(0,0,0)
+UB.Font=Enum.Font.GothamBold
+UB.TextSize=12
+UB.BorderSizePixel=0
+UB.Parent=F
+local ubc=Instance.new("UICorner") ubc.CornerRadius=UDim.new(0,5) ubc.Parent=UB
+
+local UpdatesFrame=Instance.new("Frame")
+UpdatesFrame.Size=UDim2.new(0,260,0,200)
+UpdatesFrame.Position=UDim2.new(0.5,-130,0.5,-100)
+UpdatesFrame.BackgroundColor3=BG
+UpdatesFrame.BorderSizePixel=0
+UpdatesFrame.Visible=false
+UpdatesFrame.Active=true
+UpdatesFrame.Parent=SG
+local ufc=Instance.new("UICorner") ufc.CornerRadius=UDim.new(0,8) ufc.Parent=UpdatesFrame
+local ufst=Instance.new("UIStroke") ufst.Color=AC ufst.Thickness=1 ufst.Transparency=0.5 ufst.Parent=UpdatesFrame
+
+local UT=Instance.new("TextLabel")
+UT.Size=UDim2.new(1,0,0,32)
+UT.BackgroundColor3=Color3.fromRGB(18,18,24)
+UT.Text="UPDATES"
+UT.TextColor3=AC2
+UT.Font=Enum.Font.GothamBold
+UT.TextSize=13
+UT.BorderSizePixel=0
+UT.Parent=UpdatesFrame
+local utc=Instance.new("UICorner") utc.CornerRadius=UDim.new(0,8) utc.Parent=UT
+
+local UList=Instance.new("ScrollingFrame")
+UList.Size=UDim2.new(0.9,0,0.65,0)
+UList.Position=UDim2.new(0.05,0,0,40)
+UList.BackgroundColor3=IT
+UList.BorderSizePixel=0
+UList.ScrollBarThickness=4
+UList.CanvasSize=UDim2.new(0,0,0,300)
+UList.Parent=UpdatesFrame
+local ulc=Instance.new("UICorner") ulc.CornerRadius=UDim.new(0,5) ulc.Parent=UList
+
+local UText=Instance.new("TextLabel")
+UText.Size=UDim2.new(1,-10,0,0)
+UText.Position=UDim2.new(0,5,0,0)
+UText.BackgroundTransparency=1
+UText.Text="v1.0 — Speed and Fly\nv1.1 — Keybinds\nv1.2 — Noclip\nv1.3 — Drag panel\n       and Update menu"
+UText.TextColor3=TX
+UText.Font=Enum.Font.Gotham
+UText.TextSize=12
+UText.TextXAlignment=Enum.TextXAlignment.Left
+UText.TextYAlignment=Enum.TextYAlignment.Top
+UText.AutomaticSize=Enum.AutomaticSize.Y
+UText.Parent=UList
+
+local UClose=Instance.new("TextButton")
+UClose.Size=UDim2.new(0.9,0,0,26)
+UClose.Position=UDim2.new(0.05,0,1,-34)
+UClose.BackgroundColor3=RD
+UClose.Text="Close"
+UClose.TextColor3=Color3.fromRGB(255,255,255)
+UClose.Font=Enum.Font.GothamBold
+UClose.TextSize=12
+UClose.BorderSizePixel=0
+UClose.Parent=UpdatesFrame
+local ucc=Instance.new("UICorner") ucc.CornerRadius=UDim.new(0,5) ucc.Parent=UClose
+
+UClose.MouseButton1Click:Connect(function()
+    UpdatesFrame.Visible=false
+end)
+
+UB.MouseButton1Click:Connect(function()
+    UpdatesFrame.Visible=not UpdatesFrame.Visible
+end)
 
 local function hideAll()
     SP.Visible=false FP.Visible=false NP.Visible=false
