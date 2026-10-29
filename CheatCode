@@ -25,10 +25,23 @@ do
     end
 end
 
+local origJumpPower=50
+do
+    local c=P.Character
+    if c then
+        local h=c:FindFirstChildOfClass("Humanoid")
+        if h then origJumpPower=h.JumpPower end
+    end
+end
+
 local curSpeed=origSpeed
 local lastSpeed=origSpeed
 local speedOn=true
 local lastKnown=origSpeed
+
+local curJumpPower=origJumpPower
+local lastJumpPower=origJumpPower
+local jumpOn=true
 
 local flyOn=false
 local flySpd=50
@@ -41,8 +54,12 @@ local noclipKb=nil
 local waitNoclip=false
 
 local kbApply,kbToggle,kbRestore=nil,nil,nil
-local kbFly,kbFlyApply=nil,nil
 local waitApply,waitToggle,waitRestore=false,false,false
+
+local kbJumpApply,kbJumpToggle,kbJumpRestore=nil,nil,nil
+local waitJumpApply,waitJumpToggle,waitJumpRestore=false,false,false
+
+local kbFly,kbFlyApply=nil,nil
 local waitFly,waitFlyApply=false,false
 
 local KD={Zero="0",One="1",Two="2",Three="3",Four="4",Five="5",Six="6",Seven="7",Eight="8",Nine="9",KeypadZero="N0",KeypadOne="N1",KeypadTwo="N2",KeypadThree="N3",KeypadFour="N4",KeypadFive="N5",KeypadSix="N6",KeypadSeven="N7",KeypadEight="N8",KeypadNine="N9",Minus="-",Equals="="}
@@ -58,6 +75,7 @@ local RD=Color3.fromRGB(200,40,40)
 local GR=Color3.fromRGB(60,160,60)
 local BL=Color3.fromRGB(60,120,200)
 local YL=Color3.fromRGB(220,200,40)
+local OR=Color3.fromRGB(220,120,40)
 
 local SG=Instance.new("ScreenGui")
 SG.Name="CheatEditor"
@@ -66,8 +84,8 @@ SG.IgnoreGuiInset=true
 SG.Parent=game.CoreGui
 
 local F=Instance.new("Frame")
-F.Size=UDim2.new(0,260,0,390)
-F.Position=UDim2.new(1,-270,0.5,-195)
+F.Size=UDim2.new(0,260,0,450)
+F.Position=UDim2.new(1,-270,0.5,-225)
 F.BackgroundColor3=BG
 F.BorderSizePixel=0
 F.Active=true
@@ -110,45 +128,32 @@ UIS.InputEnded:Connect(function(input)
     end
 end)
 
-local STab=Instance.new("TextButton")
-STab.Size=UDim2.new(0.3,0,0,24)
-STab.Position=UDim2.new(0.03,0,0,38)
+local function makeTab(text, xPos, yPos, w)
+    local btn=Instance.new("TextButton")
+    btn.Size=UDim2.new(w or 0.22,0,0,24)
+    btn.Position=UDim2.new(xPos,0,0,yPos)
+    btn.BackgroundColor3=IT
+    btn.Text=text
+    btn.TextColor3=TD
+    btn.Font=Enum.Font.GothamBold
+    btn.TextSize=11
+    btn.BorderSizePixel=0
+    btn.Parent=F
+    local c=Instance.new("UICorner") c.CornerRadius=UDim.new(0,5) c.Parent=btn
+    return btn
+end
+
+local STab=makeTab("Speed",0.02,38,0.22)
+local FTab=makeTab("Fly",0.26,38,0.22)
+local JTab=makeTab("Jump",0.02,68,0.22)
+local NTab=makeTab("Noclip",0.26,68,0.22)
+
 STab.BackgroundColor3=AC
-STab.Text="Speed"
 STab.TextColor3=Color3.fromRGB(255,255,255)
-STab.Font=Enum.Font.GothamBold
-STab.TextSize=11
-STab.BorderSizePixel=0
-STab.Parent=F
-local stc=Instance.new("UICorner") stc.CornerRadius=UDim.new(0,5) stc.Parent=STab
-
-local FTab=Instance.new("TextButton")
-FTab.Size=UDim2.new(0.3,0,0,24)
-FTab.Position=UDim2.new(0.35,0,0,38)
-FTab.BackgroundColor3=IT
-FTab.Text="Fly"
-FTab.TextColor3=TD
-FTab.Font=Enum.Font.GothamBold
-FTab.TextSize=11
-FTab.BorderSizePixel=0
-FTab.Parent=F
-local ftc=Instance.new("UICorner") ftc.CornerRadius=UDim.new(0,5) ftc.Parent=FTab
-
-local NTab=Instance.new("TextButton")
-NTab.Size=UDim2.new(0.3,0,0,24)
-NTab.Position=UDim2.new(0.67,0,0,38)
-NTab.BackgroundColor3=IT
-NTab.Text="Noclip"
-NTab.TextColor3=TD
-NTab.Font=Enum.Font.GothamBold
-NTab.TextSize=11
-NTab.BorderSizePixel=0
-NTab.Parent=F
-local ntc=Instance.new("UICorner") ntc.CornerRadius=UDim.new(0,5) ntc.Parent=NTab
 
 local CP=Instance.new("Frame")
-CP.Size=UDim2.new(1,0,1,-70)
-CP.Position=UDim2.new(0,0,0,70)
+CP.Size=UDim2.new(1,0,1,-100)
+CP.Position=UDim2.new(0,0,0,100)
 CP.BackgroundTransparency=1
 CP.Parent=F
 
@@ -164,6 +169,12 @@ FP.BackgroundTransparency=1
 FP.Visible=false
 FP.Parent=CP
 
+local JP=Instance.new("Frame")
+JP.Size=UDim2.new(1,0,1,0)
+JP.BackgroundTransparency=1
+JP.Visible=false
+JP.Parent=CP
+
 local NP=Instance.new("Frame")
 NP.Size=UDim2.new(1,0,1,0)
 NP.BackgroundTransparency=1
@@ -174,7 +185,7 @@ local SL=Instance.new("TextLabel")
 SL.Size=UDim2.new(0.9,0,0,20)
 SL.Position=UDim2.new(0.05,0,0,6)
 SL.BackgroundTransparency=1
-SL.Text="Current: "..math.floor(origSpeed)
+SL.Text="Current Speed: "..math.floor(origSpeed)
 SL.TextColor3=TX
 SL.Font=Enum.Font.GothamBold
 SL.TextSize=13
@@ -288,6 +299,125 @@ RKB.TextSize=11
 RKB.BorderSizePixel=0
 RKB.Parent=SP
 local rkbc=Instance.new("UICorner") rkbc.CornerRadius=UDim.new(0,5) rkbc.Parent=RKB
+
+local JPL=Instance.new("TextLabel")
+JPL.Size=UDim2.new(0.9,0,0,18)
+JPL.Position=UDim2.new(0.05,0,0,6)
+JPL.BackgroundTransparency=1
+JPL.Text="JumpPower: "..math.floor(origJumpPower)
+JPL.TextColor3=TX
+JPL.Font=Enum.Font.GothamBold
+JPL.TextSize=13
+JPL.TextXAlignment=Enum.TextXAlignment.Left
+JPL.Parent=JP
+
+local JPIB=Instance.new("TextBox")
+JPIB.Size=UDim2.new(0.9,0,0,30)
+JPIB.Position=UDim2.new(0.05,0,0,32)
+JPIB.BackgroundColor3=IT
+JPIB.Text=tostring(math.floor(origJumpPower))
+JPIB.TextColor3=TX
+JPIB.Font=Enum.Font.GothamBold
+JPIB.TextSize=13
+JPIB.ClearTextOnFocus=false
+JPIB.BorderSizePixel=0
+JPIB.Parent=JP
+local jpibc=Instance.new("UICorner") jpibc.CornerRadius=UDim.new(0,5) jpibc.Parent=JPIB
+
+local JTR=Instance.new("Frame")
+JTR.Size=UDim2.new(0.9,0,0,28)
+JTR.Position=UDim2.new(0.05,0,0,72)
+JTR.BackgroundColor3=IT
+JTR.BorderSizePixel=0
+JTR.Parent=JP
+local jtrc=Instance.new("UICorner") jtrc.CornerRadius=UDim.new(0,5) jtrc.Parent=JTR
+
+local JTL=Instance.new("TextLabel")
+JTL.Size=UDim2.new(1,-50,1,0)
+JTL.Position=UDim2.new(0,8,0,0)
+JTL.BackgroundTransparency=1
+JTL.Text="Enable Jump Edit"
+JTL.TextColor3=TX
+JTL.Font=Enum.Font.Gotham
+JTL.TextSize=12
+JTL.TextXAlignment=Enum.TextXAlignment.Left
+JTL.Parent=JTR
+
+local JTRK=Instance.new("Frame")
+JTRK.Size=UDim2.new(0,34,0,16)
+JTRK.Position=UDim2.new(1,-42,0.5,-8)
+JTRK.BackgroundColor3=AC
+JTRK.BorderSizePixel=0
+JTRK.Parent=JTR
+local jtrkc=Instance.new("UICorner") jtrkc.CornerRadius=UDim.new(1,0) jtrkc.Parent=JTRK
+
+local JKN=Instance.new("Frame")
+JKN.Size=UDim2.new(0,12,0,12)
+JKN.Position=UDim2.new(1,-14,0.5,-6)
+JKN.BackgroundColor3=Color3.fromRGB(255,255,255)
+JKN.BorderSizePixel=0
+JKN.Parent=JTRK
+local jknc=Instance.new("UICorner") jknc.CornerRadius=UDim.new(1,0) jknc.Parent=JKN
+
+local JTKB=Instance.new("TextButton")
+JTKB.Size=UDim2.new(0.9,0,0,24)
+JTKB.Position=UDim2.new(0.05,0,0,104)
+JTKB.BackgroundColor3=IT
+JTKB.Text="Enable Jump: [ ]"
+JTKB.TextColor3=TD
+JTKB.Font=Enum.Font.Gotham
+JTKB.TextSize=11
+JTKB.BorderSizePixel=0
+JTKB.Parent=JP
+local jtkbc=Instance.new("UICorner") jtkbc.CornerRadius=UDim.new(0,5) jtkbc.Parent=JTKB
+
+local JAB=Instance.new("TextButton")
+JAB.Size=UDim2.new(0.9,0,0,28)
+JAB.Position=UDim2.new(0.05,0,0,134)
+JAB.BackgroundColor3=OR
+JAB.Text="Apply Jump"
+JAB.TextColor3=Color3.fromRGB(255,255,255)
+JAB.Font=Enum.Font.GothamBold
+JAB.TextSize=12
+JAB.BorderSizePixel=0
+JAB.Parent=JP
+local jabc=Instance.new("UICorner") jabc.CornerRadius=UDim.new(0,5) jabc.Parent=JAB
+
+local JAKB=Instance.new("TextButton")
+JAKB.Size=UDim2.new(0.9,0,0,24)
+JAKB.Position=UDim2.new(0.05,0,0,166)
+JAKB.BackgroundColor3=IT
+JAKB.Text="Apply Keybind: [ ]"
+JAKB.TextColor3=TD
+JAKB.Font=Enum.Font.Gotham
+JAKB.TextSize=11
+JAKB.BorderSizePixel=0
+JAKB.Parent=JP
+local jakbc=Instance.new("UICorner") jakbc.CornerRadius=UDim.new(0,5) jakbc.Parent=JAKB
+
+local JRB=Instance.new("TextButton")
+JRB.Size=UDim2.new(0.9,0,0,28)
+JRB.Position=UDim2.new(0.05,0,0,196)
+JRB.BackgroundColor3=IT
+JRB.Text="Restore Jump ("..math.floor(origJumpPower)..")"
+JRB.TextColor3=TX
+JRB.Font=Enum.Font.Gotham
+JRB.TextSize=12
+JRB.BorderSizePixel=0
+JRB.Parent=JP
+local jrbc=Instance.new("UICorner") jrbc.CornerRadius=UDim.new(0,5) jrbc.Parent=JRB
+
+local JRKB=Instance.new("TextButton")
+JRKB.Size=UDim2.new(0.9,0,0,24)
+JRKB.Position=UDim2.new(0.05,0,0,228)
+JRKB.BackgroundColor3=IT
+JRKB.Text="Restore Keybind: [ ]"
+JRKB.TextColor3=TD
+JRKB.Font=Enum.Font.Gotham
+JRKB.TextSize=11
+JRKB.BorderSizePixel=0
+JRKB.Parent=JP
+local jrkbc=Instance.new("UICorner") jrkbc.CornerRadius=UDim.new(0,5) jrkbc.Parent=JRKB
 
 local FL=Instance.new("TextLabel")
 FL.Size=UDim2.new(0.9,0,0,20)
@@ -444,7 +574,7 @@ local nckbc=Instance.new("UICorner") nckbc.CornerRadius=UDim.new(0,5) nckbc.Pare
 
 local DB=Instance.new("TextButton")
 DB.Size=UDim2.new(0.9,0,0,26)
-DB.Position=UDim2.new(0.05,0,0,328)
+DB.Position=UDim2.new(0.05,0,0,388)
 DB.BackgroundColor3=RD
 DB.Text="Destroy"
 DB.TextColor3=Color3.fromRGB(255,255,255)
@@ -456,7 +586,7 @@ local dbc=Instance.new("UICorner") dbc.CornerRadius=UDim.new(0,5) dbc.Parent=DB
 
 local UB=Instance.new("TextButton")
 UB.Size=UDim2.new(0.9,0,0,26)
-UB.Position=UDim2.new(0.05,0,0,358)
+UB.Position=UDim2.new(0.05,0,0,418)
 UB.BackgroundColor3=YL
 UB.Text="Updates"
 UB.TextColor3=Color3.fromRGB(0,0,0)
@@ -502,7 +632,7 @@ local UText=Instance.new("TextLabel")
 UText.Size=UDim2.new(1,-10,0,0)
 UText.Position=UDim2.new(0,5,0,0)
 UText.BackgroundTransparency=1
-UText.Text="v1.0 — Speed and Fly\nv1.1 — Keybinds\nv1.2 — Noclip\nv1.3 — Drag panel\n       and Update menu"
+UText.Text="v1.0 — Speed and Fly\nv1.1 — Keybinds\nv1.2 — Noclip\nv1.3 — Drag panel\n       and Update menu\nv1.4 — Jump Edit"
 UText.TextColor3=TX
 UText.Font=Enum.Font.Gotham
 UText.TextSize=12
@@ -532,13 +662,15 @@ UB.MouseButton1Click:Connect(function()
 end)
 
 local function hideAll()
-    SP.Visible=false FP.Visible=false NP.Visible=false
+    SP.Visible=false FP.Visible=false JP.Visible=false NP.Visible=false
     STab.BackgroundColor3=IT STab.TextColor3=TD
     FTab.BackgroundColor3=IT FTab.TextColor3=TD
+    JTab.BackgroundColor3=IT JTab.TextColor3=TD
     NTab.BackgroundColor3=IT NTab.TextColor3=TD
 end
 STab.MouseButton1Click:Connect(function() hideAll() SP.Visible=true STab.BackgroundColor3=AC STab.TextColor3=Color3.fromRGB(255,255,255) end)
 FTab.MouseButton1Click:Connect(function() hideAll() FP.Visible=true FTab.BackgroundColor3=AC FTab.TextColor3=Color3.fromRGB(255,255,255) end)
+JTab.MouseButton1Click:Connect(function() hideAll() JP.Visible=true JTab.BackgroundColor3=AC JTab.TextColor3=Color3.fromRGB(255,255,255) end)
 NTab.MouseButton1Click:Connect(function() hideAll() NP.Visible=true NTab.BackgroundColor3=AC NTab.TextColor3=Color3.fromRGB(255,255,255) end)
 
 local function applySpeed()
@@ -553,7 +685,7 @@ local function updA() AKB.Text="Apply Keybind: "..(kbApply and ("["..kn(kbApply)
 local function updR() RKB.Text="Restore Keybind: "..(kbRestore and ("["..kn(kbRestore).."]") or "[ ]") RKB.TextColor3=kbRestore and TX or TD end
 local function doRestore()
     curSpeed=origSpeed lastSpeed=origSpeed
-    SL.Text="Current: "..math.floor(origSpeed)
+    SL.Text="Current Speed: "..math.floor(origSpeed)
     IB.Text=tostring(math.floor(origSpeed))
     if speedOn then applySpeed() end
 end
@@ -563,12 +695,12 @@ local function toggleSpeed()
     TS:Create(KN,TweenInfo.new(0.15),{Position=speedOn and UDim2.new(1,-14,0.5,-6) or UDim2.new(0,2,0.5,-6)}):Play()
     if speedOn then
         curSpeed=lastSpeed
-        SL.Text="Current: "..math.floor(curSpeed)
+        SL.Text="Current Speed: "..math.floor(curSpeed)
         applySpeed()
     else
         lastSpeed=curSpeed
         curSpeed=origSpeed
-        SL.Text="Current: "..math.floor(origSpeed)
+        SL.Text="Current Speed: "..math.floor(origSpeed)
         applySpeed()
     end
 end
@@ -579,7 +711,7 @@ AB.MouseButton1Click:Connect(function()
     local n=tonumber(IB.Text)
     if n then
         curSpeed=n lastSpeed=n
-        SL.Text="Current: "..math.floor(curSpeed)
+        SL.Text="Current Speed: "..math.floor(curSpeed)
         if speedOn then applySpeed() end
     else IB.Text=tostring(math.floor(curSpeed)) end
 end)
@@ -595,6 +727,64 @@ end)
 RKB.MouseButton1Click:Connect(function()
     if waitRestore then waitRestore=false updR() RKB.BackgroundColor3=IT
     else waitToggle=false waitApply=false waitRestore=true RKB.Text="Restore Keybind: [...]" RKB.BackgroundColor3=AC RKB.TextColor3=Color3.fromRGB(255,255,255) end
+end)
+
+local function applyJump()
+    local c=P.Character
+    if c then
+        local h=c:FindFirstChildOfClass("Humanoid")
+        if h then
+            h.UseJumpPower=true
+            h.JumpPower=curJumpPower
+        end
+    end
+end
+local function updJT() JTKB.Text="Enable Jump: "..(kbJumpToggle and ("["..kn(kbJumpToggle).."]") or "[ ]") JTKB.TextColor3=kbJumpToggle and TX or TD end
+local function updJA() JAKB.Text="Apply Keybind: "..(kbJumpApply and ("["..kn(kbJumpApply).."]") or "[ ]") JAKB.TextColor3=kbJumpApply and TX or TD end
+local function updJR() JRKB.Text="Restore Keybind: "..(kbJumpRestore and ("["..kn(kbJumpRestore).."]") or "[ ]") JRKB.TextColor3=kbJumpRestore and TX or TD end
+local function doJumpRestore()
+    curJumpPower=origJumpPower
+    lastJumpPower=origJumpPower
+    JPL.Text="JumpPower: "..math.floor(origJumpPower)
+    JPIB.Text=tostring(math.floor(origJumpPower))
+    if jumpOn then applyJump() end
+end
+local function toggleJump()
+    jumpOn=not jumpOn
+    JTRK.BackgroundColor3=jumpOn and AC or Color3.fromRGB(60,60,70)
+    TS:Create(JKN,TweenInfo.new(0.15),{Position=jumpOn and UDim2.new(1,-14,0.5,-6) or UDim2.new(0,2,0.5,-6)}):Play()
+    if jumpOn then
+        curJumpPower=lastJumpPower
+        JPL.Text="JumpPower: "..math.floor(curJumpPower)
+        applyJump()
+    else
+        lastJumpPower=curJumpPower
+        curJumpPower=origJumpPower
+        JPL.Text="JumpPower: "..math.floor(origJumpPower)
+        applyJump()
+    end
+end
+JTR.InputBegan:Connect(function(i)
+    if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then toggleJump() end
+end)
+JAB.MouseButton1Click:Connect(function()
+    local jp=tonumber(JPIB.Text)
+    if jp then curJumpPower=jp lastJumpPower=jp end
+    JPL.Text="JumpPower: "..math.floor(curJumpPower)
+    if jumpOn then applyJump() end
+end)
+JRB.MouseButton1Click:Connect(doJumpRestore)
+JTKB.MouseButton1Click:Connect(function()
+    if waitJumpToggle then waitJumpToggle=false updJT() JTKB.BackgroundColor3=IT
+    else waitJumpApply=false waitJumpRestore=false waitJumpToggle=true JTKB.Text="Enable Jump: [...]" JTKB.BackgroundColor3=AC JTKB.TextColor3=Color3.fromRGB(255,255,255) end
+end)
+JAKB.MouseButton1Click:Connect(function()
+    if waitJumpApply then waitJumpApply=false updJA() JAKB.BackgroundColor3=IT
+    else waitJumpToggle=false waitJumpRestore=false waitJumpApply=true JAKB.Text="Apply Keybind: [...]" JAKB.BackgroundColor3=AC JAKB.TextColor3=Color3.fromRGB(255,255,255) end
+end)
+JRKB.MouseButton1Click:Connect(function()
+    if waitJumpRestore then waitJumpRestore=false updJR() JRKB.BackgroundColor3=IT
+    else waitJumpToggle=false waitJumpApply=false waitJumpRestore=true JRKB.Text="Restore Keybind: [...]" JRKB.BackgroundColor3=AC JRKB.TextColor3=Color3.fromRGB(255,255,255) end
 end)
 
 local function stopFly()
@@ -739,6 +929,33 @@ UIS.InputBegan:Connect(function(i,gpe)
         end
         return
     end
+    if waitJumpToggle then
+        if i.UserInputType==Enum.UserInputType.Keyboard then
+            local nk=i.KeyCode
+            if kbJumpApply==nk then kbJumpApply=nil updJA() end
+            if kbJumpRestore==nk then kbJumpRestore=nil updJR() end
+            kbJumpToggle=nk waitJumpToggle=false updJT() JTKB.BackgroundColor3=IT
+        end
+        return
+    end
+    if waitJumpApply then
+        if i.UserInputType==Enum.UserInputType.Keyboard then
+            local nk=i.KeyCode
+            if kbJumpToggle==nk then kbJumpToggle=nil updJT() end
+            if kbJumpRestore==nk then kbJumpRestore=nil updJR() end
+            kbJumpApply=nk waitJumpApply=false updJA() JAKB.BackgroundColor3=IT
+        end
+        return
+    end
+    if waitJumpRestore then
+        if i.UserInputType==Enum.UserInputType.Keyboard then
+            local nk=i.KeyCode
+            if kbJumpToggle==nk then kbJumpToggle=nil updJT() end
+            if kbJumpApply==nk then kbJumpApply=nil updJA() end
+            kbJumpRestore=nk waitJumpRestore=false updJR() JRKB.BackgroundColor3=IT
+        end
+        return
+    end
     if waitFly then
         if i.UserInputType==Enum.UserInputType.Keyboard then kbFly=i.KeyCode waitFly=false updFT() FTKB.BackgroundColor3=IT end
         return
@@ -755,12 +972,20 @@ UIS.InputBegan:Connect(function(i,gpe)
         local n=tonumber(IB.Text)
         if n then
             curSpeed=n lastSpeed=n
-            SL.Text="Current: "..math.floor(curSpeed)
+            SL.Text="Current Speed: "..math.floor(curSpeed)
             if speedOn then applySpeed() end
         end
     end
     if kbToggle and i.KeyCode==kbToggle then toggleSpeed() end
     if kbRestore and i.KeyCode==kbRestore then doRestore() end
+    if kbJumpApply and i.KeyCode==kbJumpApply then
+        local jp=tonumber(JPIB.Text)
+        if jp then curJumpPower=jp lastJumpPower=jp end
+        JPL.Text="JumpPower: "..math.floor(curJumpPower)
+        if jumpOn then applyJump() end
+    end
+    if kbJumpToggle and i.KeyCode==kbJumpToggle then toggleJump() end
+    if kbJumpRestore and i.KeyCode==kbJumpRestore then doJumpRestore() end
     if kbFly and i.KeyCode==kbFly then toggleFly() end
     if noclipKb and i.KeyCode==noclipKb then toggleNoclip() end
     if kbFlyApply and i.KeyCode==kbFlyApply then
@@ -779,10 +1004,14 @@ RS.Heartbeat:Connect(function()
     else
         if h.WalkSpeed~=lastKnown then
             lastKnown=h.WalkSpeed origSpeed=h.WalkSpeed curSpeed=h.WalkSpeed
-            SL.Text="Current: "..math.floor(h.WalkSpeed)
+            SL.Text="Current Speed: "..math.floor(h.WalkSpeed)
             IB.Text=tostring(math.floor(h.WalkSpeed))
             RB.Text="Restore ("..math.floor(h.WalkSpeed)..")"
         end
+    end
+    if jumpOn then
+        h.UseJumpPower=true
+        if h.JumpPower~=curJumpPower then h.JumpPower=curJumpPower end
     end
 end)
 
@@ -791,13 +1020,15 @@ P.CharacterAdded:Connect(function(nc)
     local h=nc:FindFirstChildOfClass("Humanoid")
     if h then
         origSpeed=h.WalkSpeed lastKnown=h.WalkSpeed
+        origJumpPower=h.JumpPower
         if speedOn then h.WalkSpeed=curSpeed
         else
             curSpeed=h.WalkSpeed
-            SL.Text="Current: "..math.floor(h.WalkSpeed)
+            SL.Text="Current Speed: "..math.floor(h.WalkSpeed)
             IB.Text=tostring(math.floor(h.WalkSpeed))
             RB.Text="Restore ("..math.floor(h.WalkSpeed)..")"
         end
+        if jumpOn then applyJump() end
     end
     if flyOn then flyOn=false toggleFly() end
     if noclipOn then noclipOn=false toggleNoclip() end
