@@ -1,3 +1,4 @@
+--part 1
 local P=game.Players.LocalPlayer
 local UIS=game:GetService("UserInputService")
 local RS=game:GetService("RunService")
@@ -93,6 +94,16 @@ F.Parent=SG
 local fc=Instance.new("UICorner") fc.CornerRadius=UDim.new(0,8) fc.Parent=F
 local fst=Instance.new("UIStroke") fst.Color=AC fst.Thickness=1 fst.Transparency=0.5 fst.Parent=F
 
+local BgImage=Instance.new("ImageLabel")
+BgImage.Size=UDim2.new(1,0,1,0)
+BgImage.BackgroundTransparency=1
+BgImage.Image=""
+BgImage.ScaleType=Enum.ScaleType.Crop
+BgImage.Visible=false
+BgImage.ZIndex=0
+BgImage.Parent=F
+local BgCorner=Instance.new("UICorner") BgCorner.CornerRadius=UDim.new(0,8) BgCorner.Parent=BgImage
+
 local T=Instance.new("TextLabel")
 T.Size=UDim2.new(1,0,0,32)
 T.BackgroundColor3=Color3.fromRGB(18,18,24)
@@ -102,6 +113,7 @@ T.Font=Enum.Font.GothamBold
 T.TextSize=13
 T.BorderSizePixel=0
 T.Active=true
+T.ZIndex=2
 T.Parent=F
 local tcn=Instance.new("UICorner") tcn.CornerRadius=UDim.new(0,8) tcn.Parent=T
 
@@ -138,6 +150,7 @@ local function makeTab(text, xPos, yPos, w)
     btn.Font=Enum.Font.GothamBold
     btn.TextSize=11
     btn.BorderSizePixel=0
+    btn.ZIndex=2
     btn.Parent=F
     local c=Instance.new("UICorner") c.CornerRadius=UDim.new(0,5) c.Parent=btn
     return btn
@@ -147,6 +160,7 @@ local STab=makeTab("Speed",0.02,38,0.22)
 local FTab=makeTab("Fly",0.26,38,0.22)
 local JTab=makeTab("Jump",0.02,68,0.22)
 local NTab=makeTab("Noclip",0.26,68,0.22)
+local SetTab=makeTab("Settings",0.50,38,0.22)
 
 STab.BackgroundColor3=AC
 STab.TextColor3=Color3.fromRGB(255,255,255)
@@ -155,31 +169,43 @@ local CP=Instance.new("Frame")
 CP.Size=UDim2.new(1,0,1,-100)
 CP.Position=UDim2.new(0,0,0,100)
 CP.BackgroundTransparency=1
+CP.ZIndex=2
 CP.Parent=F
-
+--part 2
 local SP=Instance.new("Frame")
 SP.Size=UDim2.new(1,0,1,0)
 SP.BackgroundTransparency=1
 SP.Visible=true
+SP.ZIndex=2
 SP.Parent=CP
 
 local FP=Instance.new("Frame")
 FP.Size=UDim2.new(1,0,1,0)
 FP.BackgroundTransparency=1
 FP.Visible=false
+FP.ZIndex=2
 FP.Parent=CP
 
 local JP=Instance.new("Frame")
 JP.Size=UDim2.new(1,0,1,0)
 JP.BackgroundTransparency=1
 JP.Visible=false
+JP.ZIndex=2
 JP.Parent=CP
 
 local NP=Instance.new("Frame")
 NP.Size=UDim2.new(1,0,1,0)
 NP.BackgroundTransparency=1
 NP.Visible=false
+NP.ZIndex=2
 NP.Parent=CP
+
+local SetP=Instance.new("Frame")
+SetP.Size=UDim2.new(1,0,1,0)
+SetP.BackgroundTransparency=1
+SetP.Visible=false
+SetP.ZIndex=2
+SetP.Parent=CP
 
 local SL=Instance.new("TextLabel")
 SL.Size=UDim2.new(0.9,0,0,20)
@@ -190,6 +216,7 @@ SL.TextColor3=TX
 SL.Font=Enum.Font.GothamBold
 SL.TextSize=13
 SL.TextXAlignment=Enum.TextXAlignment.Left
+SL.ZIndex=2
 SL.Parent=SP
 
 local IB=Instance.new("TextBox")
@@ -202,6 +229,7 @@ IB.Font=Enum.Font.GothamBold
 IB.TextSize=13
 IB.ClearTextOnFocus=false
 IB.BorderSizePixel=0
+IB.ZIndex=2
 IB.Parent=SP
 local ibc=Instance.new("UICorner") ibc.CornerRadius=UDim.new(0,5) ibc.Parent=IB
 
@@ -210,6 +238,7 @@ TR.Size=UDim2.new(0.9,0,0,28)
 TR.Position=UDim2.new(0.05,0,0,72)
 TR.BackgroundColor3=IT
 TR.BorderSizePixel=0
+TR.ZIndex=2
 TR.Parent=SP
 local trc=Instance.new("UICorner") trc.CornerRadius=UDim.new(0,5) trc.Parent=TR
 
@@ -222,6 +251,7 @@ TL.TextColor3=TX
 TL.Font=Enum.Font.Gotham
 TL.TextSize=12
 TL.TextXAlignment=Enum.TextXAlignment.Left
+TL.ZIndex=2
 TL.Parent=TR
 
 local TRK=Instance.new("Frame")
@@ -229,6 +259,7 @@ TRK.Size=UDim2.new(0,34,0,16)
 TRK.Position=UDim2.new(1,-42,0.5,-8)
 TRK.BackgroundColor3=AC
 TRK.BorderSizePixel=0
+TRK.ZIndex=2
 TRK.Parent=TR
 local trkc=Instance.new("UICorner") trkc.CornerRadius=UDim.new(1,0) trkc.Parent=TRK
 
@@ -237,6 +268,7 @@ KN.Size=UDim2.new(0,12,0,12)
 KN.Position=UDim2.new(1,-14,0.5,-6)
 KN.BackgroundColor3=Color3.fromRGB(255,255,255)
 KN.BorderSizePixel=0
+KN.ZIndex=2
 KN.Parent=TRK
 local knc=Instance.new("UICorner") knc.CornerRadius=UDim.new(1,0) knc.Parent=KN
 
@@ -249,6 +281,7 @@ TKB.TextColor3=TD
 TKB.Font=Enum.Font.Gotham
 TKB.TextSize=11
 TKB.BorderSizePixel=0
+TKB.ZIndex=2
 TKB.Parent=SP
 local tkbc=Instance.new("UICorner") tkbc.CornerRadius=UDim.new(0,5) tkbc.Parent=TKB
 
@@ -261,6 +294,7 @@ AB.TextColor3=Color3.fromRGB(255,255,255)
 AB.Font=Enum.Font.GothamBold
 AB.TextSize=12
 AB.BorderSizePixel=0
+AB.ZIndex=2
 AB.Parent=SP
 local abc=Instance.new("UICorner") abc.CornerRadius=UDim.new(0,5) abc.Parent=AB
 
@@ -273,6 +307,7 @@ AKB.TextColor3=TD
 AKB.Font=Enum.Font.Gotham
 AKB.TextSize=11
 AKB.BorderSizePixel=0
+AKB.ZIndex=2
 AKB.Parent=SP
 local akbc=Instance.new("UICorner") akbc.CornerRadius=UDim.new(0,5) akbc.Parent=AKB
 
@@ -285,6 +320,7 @@ RB.TextColor3=TX
 RB.Font=Enum.Font.Gotham
 RB.TextSize=12
 RB.BorderSizePixel=0
+RB.ZIndex=2
 RB.Parent=SP
 local rbc=Instance.new("UICorner") rbc.CornerRadius=UDim.new(0,5) rbc.Parent=RB
 
@@ -297,9 +333,10 @@ RKB.TextColor3=TD
 RKB.Font=Enum.Font.Gotham
 RKB.TextSize=11
 RKB.BorderSizePixel=0
+RKB.ZIndex=2
 RKB.Parent=SP
 local rkbc=Instance.new("UICorner") rkbc.CornerRadius=UDim.new(0,5) rkbc.Parent=RKB
-
+--part 3
 local JPL=Instance.new("TextLabel")
 JPL.Size=UDim2.new(0.9,0,0,18)
 JPL.Position=UDim2.new(0.05,0,0,6)
@@ -309,6 +346,7 @@ JPL.TextColor3=TX
 JPL.Font=Enum.Font.GothamBold
 JPL.TextSize=13
 JPL.TextXAlignment=Enum.TextXAlignment.Left
+JPL.ZIndex=2
 JPL.Parent=JP
 
 local JPIB=Instance.new("TextBox")
@@ -321,6 +359,7 @@ JPIB.Font=Enum.Font.GothamBold
 JPIB.TextSize=13
 JPIB.ClearTextOnFocus=false
 JPIB.BorderSizePixel=0
+JPIB.ZIndex=2
 JPIB.Parent=JP
 local jpibc=Instance.new("UICorner") jpibc.CornerRadius=UDim.new(0,5) jpibc.Parent=JPIB
 
@@ -329,6 +368,7 @@ JTR.Size=UDim2.new(0.9,0,0,28)
 JTR.Position=UDim2.new(0.05,0,0,72)
 JTR.BackgroundColor3=IT
 JTR.BorderSizePixel=0
+JTR.ZIndex=2
 JTR.Parent=JP
 local jtrc=Instance.new("UICorner") jtrc.CornerRadius=UDim.new(0,5) jtrc.Parent=JTR
 
@@ -341,6 +381,7 @@ JTL.TextColor3=TX
 JTL.Font=Enum.Font.Gotham
 JTL.TextSize=12
 JTL.TextXAlignment=Enum.TextXAlignment.Left
+JTL.ZIndex=2
 JTL.Parent=JTR
 
 local JTRK=Instance.new("Frame")
@@ -348,6 +389,7 @@ JTRK.Size=UDim2.new(0,34,0,16)
 JTRK.Position=UDim2.new(1,-42,0.5,-8)
 JTRK.BackgroundColor3=AC
 JTRK.BorderSizePixel=0
+JTRK.ZIndex=2
 JTRK.Parent=JTR
 local jtrkc=Instance.new("UICorner") jtrkc.CornerRadius=UDim.new(1,0) jtrkc.Parent=JTRK
 
@@ -356,6 +398,7 @@ JKN.Size=UDim2.new(0,12,0,12)
 JKN.Position=UDim2.new(1,-14,0.5,-6)
 JKN.BackgroundColor3=Color3.fromRGB(255,255,255)
 JKN.BorderSizePixel=0
+JKN.ZIndex=2
 JKN.Parent=JTRK
 local jknc=Instance.new("UICorner") jknc.CornerRadius=UDim.new(1,0) jknc.Parent=JKN
 
@@ -368,6 +411,7 @@ JTKB.TextColor3=TD
 JTKB.Font=Enum.Font.Gotham
 JTKB.TextSize=11
 JTKB.BorderSizePixel=0
+JTKB.ZIndex=2
 JTKB.Parent=JP
 local jtkbc=Instance.new("UICorner") jtkbc.CornerRadius=UDim.new(0,5) jtkbc.Parent=JTKB
 
@@ -380,6 +424,7 @@ JAB.TextColor3=Color3.fromRGB(255,255,255)
 JAB.Font=Enum.Font.GothamBold
 JAB.TextSize=12
 JAB.BorderSizePixel=0
+JAB.ZIndex=2
 JAB.Parent=JP
 local jabc=Instance.new("UICorner") jabc.CornerRadius=UDim.new(0,5) jabc.Parent=JAB
 
@@ -392,6 +437,7 @@ JAKB.TextColor3=TD
 JAKB.Font=Enum.Font.Gotham
 JAKB.TextSize=11
 JAKB.BorderSizePixel=0
+JAKB.ZIndex=2
 JAKB.Parent=JP
 local jakbc=Instance.new("UICorner") jakbc.CornerRadius=UDim.new(0,5) jakbc.Parent=JAKB
 
@@ -404,6 +450,7 @@ JRB.TextColor3=TX
 JRB.Font=Enum.Font.Gotham
 JRB.TextSize=12
 JRB.BorderSizePixel=0
+JRB.ZIndex=2
 JRB.Parent=JP
 local jrbc=Instance.new("UICorner") jrbc.CornerRadius=UDim.new(0,5) jrbc.Parent=JRB
 
@@ -416,6 +463,7 @@ JRKB.TextColor3=TD
 JRKB.Font=Enum.Font.Gotham
 JRKB.TextSize=11
 JRKB.BorderSizePixel=0
+JRKB.ZIndex=2
 JRKB.Parent=JP
 local jrkbc=Instance.new("UICorner") jrkbc.CornerRadius=UDim.new(0,5) jrkbc.Parent=JRKB
 
@@ -428,6 +476,7 @@ FL.TextColor3=TX
 FL.Font=Enum.Font.GothamBold
 FL.TextSize=13
 FL.TextXAlignment=Enum.TextXAlignment.Left
+FL.ZIndex=2
 FL.Parent=FP
 
 local FIB=Instance.new("TextBox")
@@ -440,6 +489,7 @@ FIB.Font=Enum.Font.GothamBold
 FIB.TextSize=13
 FIB.ClearTextOnFocus=false
 FIB.BorderSizePixel=0
+FIB.ZIndex=2
 FIB.Parent=FP
 local fibc=Instance.new("UICorner") fibc.CornerRadius=UDim.new(0,5) fibc.Parent=FIB
 
@@ -448,6 +498,7 @@ FTR.Size=UDim2.new(0.9,0,0,28)
 FTR.Position=UDim2.new(0.05,0,0,72)
 FTR.BackgroundColor3=IT
 FTR.BorderSizePixel=0
+FTR.ZIndex=2
 FTR.Parent=FP
 local ftrc=Instance.new("UICorner") ftrc.CornerRadius=UDim.new(0,5) ftrc.Parent=FTR
 
@@ -460,6 +511,7 @@ FTL.TextColor3=TX
 FTL.Font=Enum.Font.Gotham
 FTL.TextSize=12
 FTL.TextXAlignment=Enum.TextXAlignment.Left
+FTL.ZIndex=2
 FTL.Parent=FTR
 
 local FTRK=Instance.new("Frame")
@@ -467,6 +519,7 @@ FTRK.Size=UDim2.new(0,34,0,16)
 FTRK.Position=UDim2.new(1,-42,0.5,-8)
 FTRK.BackgroundColor3=Color3.fromRGB(60,60,70)
 FTRK.BorderSizePixel=0
+FTRK.ZIndex=2
 FTRK.Parent=FTR
 local ftrkc=Instance.new("UICorner") ftrkc.CornerRadius=UDim.new(1,0) ftrkc.Parent=FTRK
 
@@ -475,6 +528,7 @@ FKN.Size=UDim2.new(0,12,0,12)
 FKN.Position=UDim2.new(0,2,0.5,-6)
 FKN.BackgroundColor3=Color3.fromRGB(255,255,255)
 FKN.BorderSizePixel=0
+FKN.ZIndex=2
 FKN.Parent=FTRK
 local fknc=Instance.new("UICorner") fknc.CornerRadius=UDim.new(1,0) fknc.Parent=FKN
 
@@ -487,6 +541,7 @@ FTKB.TextColor3=TD
 FTKB.Font=Enum.Font.Gotham
 FTKB.TextSize=11
 FTKB.BorderSizePixel=0
+FTKB.ZIndex=2
 FTKB.Parent=FP
 local ftkbc=Instance.new("UICorner") ftkbc.CornerRadius=UDim.new(0,5) ftkbc.Parent=FTKB
 
@@ -499,6 +554,7 @@ FAB.TextColor3=Color3.fromRGB(255,255,255)
 FAB.Font=Enum.Font.GothamBold
 FAB.TextSize=12
 FAB.BorderSizePixel=0
+FAB.ZIndex=2
 FAB.Parent=FP
 local fabc=Instance.new("UICorner") fabc.CornerRadius=UDim.new(0,5) fabc.Parent=FAB
 
@@ -511,9 +567,10 @@ FAKB.TextColor3=TD
 FAKB.Font=Enum.Font.Gotham
 FAKB.TextSize=11
 FAKB.BorderSizePixel=0
+FAKB.ZIndex=2
 FAKB.Parent=FP
 local fakbc=Instance.new("UICorner") fakbc.CornerRadius=UDim.new(0,5) fakbc.Parent=FAKB
-
+--part 4
 local NL=Instance.new("TextLabel")
 NL.Size=UDim2.new(0.9,0,0,20)
 NL.Position=UDim2.new(0.05,0,0,6)
@@ -523,6 +580,7 @@ NL.TextColor3=AC2
 NL.Font=Enum.Font.GothamBold
 NL.TextSize=13
 NL.TextXAlignment=Enum.TextXAlignment.Left
+NL.ZIndex=2
 NL.Parent=NP
 
 local NCRow=Instance.new("Frame")
@@ -530,6 +588,7 @@ NCRow.Size=UDim2.new(0.9,0,0,28)
 NCRow.Position=UDim2.new(0.05,0,0,32)
 NCRow.BackgroundColor3=IT
 NCRow.BorderSizePixel=0
+NCRow.ZIndex=2
 NCRow.Parent=NP
 local ncrc=Instance.new("UICorner") ncrc.CornerRadius=UDim.new(0,5) ncrc.Parent=NCRow
 
@@ -542,6 +601,7 @@ NCL.TextColor3=TX
 NCL.Font=Enum.Font.Gotham
 NCL.TextSize=12
 NCL.TextXAlignment=Enum.TextXAlignment.Left
+NCL.ZIndex=2
 NCL.Parent=NCRow
 
 local NCTRK=Instance.new("Frame")
@@ -549,6 +609,7 @@ NCTRK.Size=UDim2.new(0,34,0,16)
 NCTRK.Position=UDim2.new(1,-42,0.5,-8)
 NCTRK.BackgroundColor3=Color3.fromRGB(60,60,70)
 NCTRK.BorderSizePixel=0
+NCTRK.ZIndex=2
 NCTRK.Parent=NCRow
 local nctrkc=Instance.new("UICorner") nctrkc.CornerRadius=UDim.new(1,0) nctrkc.Parent=NCTRK
 
@@ -557,6 +618,7 @@ NCKN.Size=UDim2.new(0,12,0,12)
 NCKN.Position=UDim2.new(0,2,0.5,-6)
 NCKN.BackgroundColor3=Color3.fromRGB(255,255,255)
 NCKN.BorderSizePixel=0
+NCKN.ZIndex=2
 NCKN.Parent=NCTRK
 local ncknc=Instance.new("UICorner") ncknc.CornerRadius=UDim.new(1,0) ncknc.Parent=NCKN
 
@@ -569,30 +631,148 @@ NCKB.TextColor3=TD
 NCKB.Font=Enum.Font.Gotham
 NCKB.TextSize=11
 NCKB.BorderSizePixel=0
+NCKB.ZIndex=2
 NCKB.Parent=NP
 local nckbc=Instance.new("UICorner") nckbc.CornerRadius=UDim.new(0,5) nckbc.Parent=NCKB
 
+local SetTitle=Instance.new("TextLabel")
+SetTitle.Size=UDim2.new(0.9,0,0,18)
+SetTitle.Position=UDim2.new(0.05,0,0,6)
+SetTitle.BackgroundTransparency=1
+SetTitle.Text="Settings"
+SetTitle.TextColor3=AC2
+SetTitle.Font=Enum.Font.GothamBold
+SetTitle.TextSize=13
+SetTitle.TextXAlignment=Enum.TextXAlignment.Left
+SetTitle.ZIndex=2
+SetTitle.Parent=SetP
+
+local ThemeLabel=Instance.new("TextLabel")
+ThemeLabel.Size=UDim2.new(0.9,0,0,16)
+ThemeLabel.Position=UDim2.new(0.05,0,0,28)
+ThemeLabel.BackgroundTransparency=1
+ThemeLabel.Text="Theme"
+ThemeLabel.TextColor3=TX
+ThemeLabel.Font=Enum.Font.GothamBold
+ThemeLabel.TextSize=12
+ThemeLabel.TextXAlignment=Enum.TextXAlignment.Left
+ThemeLabel.ZIndex=2
+ThemeLabel.Parent=SetP
+
+local function makeThemeBtn(name,color,xPos,yPos)
+    local btn=Instance.new("TextButton")
+    btn.Size=UDim2.new(0.18,0,0,22)
+    btn.Position=UDim2.new(xPos,0,0,yPos)
+    btn.BackgroundColor3=color
+    btn.Text=name
+    btn.TextColor3=Color3.fromRGB(255,255,255)
+    btn.Font=Enum.Font.GothamBold
+    btn.TextSize=9
+    btn.BorderSizePixel=0
+    btn.ZIndex=2
+    btn.Parent=SetP
+    local c=Instance.new("UICorner") c.CornerRadius=UDim.new(0,4) c.Parent=btn
+    return btn
+end
+
+local PurpleBtn=makeThemeBtn("Purple",Color3.fromRGB(140,80,255),0.05,46)
+local BlueBtn=makeThemeBtn("Blue",Color3.fromRGB(60,120,200),0.25,46)
+local RedBtn=makeThemeBtn("Red",Color3.fromRGB(200,40,40),0.45,46)
+local GreenBtn=makeThemeBtn("Green",Color3.fromRGB(60,160,60),0.65,46)
+
+local BgLabel=Instance.new("TextLabel")
+BgLabel.Size=UDim2.new(0.9,0,0,16)
+BgLabel.Position=UDim2.new(0.05,0,0,76)
+BgLabel.BackgroundTransparency=1
+BgLabel.Text="Background Image ID"
+BgLabel.TextColor3=TX
+BgLabel.Font=Enum.Font.GothamBold
+BgLabel.TextSize=12
+BgLabel.TextXAlignment=Enum.TextXAlignment.Left
+BgLabel.ZIndex=2
+BgLabel.Parent=SetP
+
+local BgInput=Instance.new("TextBox")
+BgInput.Size=UDim2.new(0.9,0,0,26)
+BgInput.Position=UDim2.new(0.05,0,0,96)
+BgInput.BackgroundColor3=IT
+BgInput.Text=""
+BgInput.PlaceholderText="rbxassetid://..."
+BgInput.TextColor3=TX
+BgInput.PlaceholderColor3=TD
+BgInput.Font=Enum.Font.Gotham
+BgInput.TextSize=11
+BgInput.ClearTextOnFocus=false
+BgInput.BorderSizePixel=0
+BgInput.ZIndex=2
+BgInput.Parent=SetP
+local bgic=Instance.new("UICorner") bgic.CornerRadius=UDim.new(0,4) bgic.Parent=BgInput
+
+local BgApply=Instance.new("TextButton")
+BgApply.Size=UDim2.new(0.43,0,0,24)
+BgApply.Position=UDim2.new(0.05,0,0,128)
+BgApply.BackgroundColor3=GR
+BgApply.Text="Apply"
+BgApply.TextColor3=Color3.fromRGB(255,255,255)
+BgApply.Font=Enum.Font.GothamBold
+BgApply.TextSize=11
+BgApply.BorderSizePixel=0
+BgApply.ZIndex=2
+BgApply.Parent=SetP
+local bgac=Instance.new("UICorner") bgac.CornerRadius=UDim.new(0,4) bgac.Parent=BgApply
+
+local BgRemove=Instance.new("TextButton")
+BgRemove.Size=UDim2.new(0.43,0,0,24)
+BgRemove.Position=UDim2.new(0.52,0,0,128)
+BgRemove.BackgroundColor3=RD
+BgRemove.Text="Remove"
+BgRemove.TextColor3=Color3.fromRGB(255,255,255)
+BgRemove.Font=Enum.Font.GothamBold
+BgRemove.TextSize=11
+BgRemove.BorderSizePixel=0
+BgRemove.ZIndex=2
+BgRemove.Parent=SetP
+local bgrc=Instance.new("UICorner") bgrc.CornerRadius=UDim.new(0,4) bgrc.Parent=BgRemove
+
+local ScaleLabel=Instance.new("TextLabel")
+ScaleLabel.Size=UDim2.new(0.9,0,0,16)
+ScaleLabel.Position=UDim2.new(0.05,0,0,164)
+ScaleLabel.BackgroundTransparency=1
+ScaleLabel.Text="GUI Scale"
+ScaleLabel.TextColor3=TX
+ScaleLabel.Font=Enum.Font.GothamBold
+ScaleLabel.TextSize=12
+ScaleLabel.TextXAlignment=Enum.TextXAlignment.Left
+ScaleLabel.ZIndex=2
+ScaleLabel.Parent=SetP
+
+local SmallBtn=makeThemeBtn("Small",Color3.fromRGB(60,60,70),0.05,184)
+local MediumBtn=makeThemeBtn("Medium",Color3.fromRGB(60,60,70),0.25,184)
+local LargeBtn=makeThemeBtn("Large",Color3.fromRGB(60,60,70),0.45,184)
+--part 5
 local DB=Instance.new("TextButton")
 DB.Size=UDim2.new(0.9,0,0,26)
-DB.Position=UDim2.new(0.05,0,0,388)
+DB.Position=UDim2.new(0.05,0,1,-62)
 DB.BackgroundColor3=RD
 DB.Text="Destroy"
 DB.TextColor3=Color3.fromRGB(255,255,255)
 DB.Font=Enum.Font.GothamBold
 DB.TextSize=12
 DB.BorderSizePixel=0
+DB.ZIndex=2
 DB.Parent=F
 local dbc=Instance.new("UICorner") dbc.CornerRadius=UDim.new(0,5) dbc.Parent=DB
 
 local UB=Instance.new("TextButton")
 UB.Size=UDim2.new(0.9,0,0,26)
-UB.Position=UDim2.new(0.05,0,0,418)
+UB.Position=UDim2.new(0.05,0,1,-32)
 UB.BackgroundColor3=YL
 UB.Text="Updates"
 UB.TextColor3=Color3.fromRGB(0,0,0)
 UB.Font=Enum.Font.GothamBold
 UB.TextSize=12
 UB.BorderSizePixel=0
+UB.ZIndex=2
 UB.Parent=F
 local ubc=Instance.new("UICorner") ubc.CornerRadius=UDim.new(0,5) ubc.Parent=UB
 
@@ -603,6 +783,7 @@ UpdatesFrame.BackgroundColor3=BG
 UpdatesFrame.BorderSizePixel=0
 UpdatesFrame.Visible=false
 UpdatesFrame.Active=true
+UpdatesFrame.ZIndex=3
 UpdatesFrame.Parent=SG
 local ufc=Instance.new("UICorner") ufc.CornerRadius=UDim.new(0,8) ufc.Parent=UpdatesFrame
 local ufst=Instance.new("UIStroke") ufst.Color=AC ufst.Thickness=1 ufst.Transparency=0.5 ufst.Parent=UpdatesFrame
@@ -615,6 +796,7 @@ UT.TextColor3=AC2
 UT.Font=Enum.Font.GothamBold
 UT.TextSize=13
 UT.BorderSizePixel=0
+UT.ZIndex=3
 UT.Parent=UpdatesFrame
 local utc=Instance.new("UICorner") utc.CornerRadius=UDim.new(0,8) utc.Parent=UT
 
@@ -625,6 +807,7 @@ UList.BackgroundColor3=IT
 UList.BorderSizePixel=0
 UList.ScrollBarThickness=4
 UList.CanvasSize=UDim2.new(0,0,0,300)
+UList.ZIndex=3
 UList.Parent=UpdatesFrame
 local ulc=Instance.new("UICorner") ulc.CornerRadius=UDim.new(0,5) ulc.Parent=UList
 
@@ -632,13 +815,14 @@ local UText=Instance.new("TextLabel")
 UText.Size=UDim2.new(1,-10,0,0)
 UText.Position=UDim2.new(0,5,0,0)
 UText.BackgroundTransparency=1
-UText.Text="v1.0 — Speed and Fly\nv1.1 — Keybinds\nv1.2 — Noclip\nv1.3 — Drag panel\n       and Update menu\nv1.4 — Jump Edit"
+UText.Text="v1.0 — Speed and Fly\nv1.1 — Keybinds\nv1.2 — Noclip\nv1.3 — Drag panel\n       and Update menu\nv1.4 — Jump Edit\nv1.5 — Settings"
 UText.TextColor3=TX
 UText.Font=Enum.Font.Gotham
 UText.TextSize=12
 UText.TextXAlignment=Enum.TextXAlignment.Left
 UText.TextYAlignment=Enum.TextYAlignment.Top
 UText.AutomaticSize=Enum.AutomaticSize.Y
+UText.ZIndex=3
 UText.Parent=UList
 
 local UClose=Instance.new("TextButton")
@@ -650,28 +834,30 @@ UClose.TextColor3=Color3.fromRGB(255,255,255)
 UClose.Font=Enum.Font.GothamBold
 UClose.TextSize=12
 UClose.BorderSizePixel=0
+UClose.ZIndex=3
 UClose.Parent=UpdatesFrame
 local ucc=Instance.new("UICorner") ucc.CornerRadius=UDim.new(0,5) ucc.Parent=UClose
 
 UClose.MouseButton1Click:Connect(function()
     UpdatesFrame.Visible=false
 end)
-
 UB.MouseButton1Click:Connect(function()
     UpdatesFrame.Visible=not UpdatesFrame.Visible
 end)
 
 local function hideAll()
-    SP.Visible=false FP.Visible=false JP.Visible=false NP.Visible=false
+    SP.Visible=false FP.Visible=false JP.Visible=false NP.Visible=false SetP.Visible=false
     STab.BackgroundColor3=IT STab.TextColor3=TD
     FTab.BackgroundColor3=IT FTab.TextColor3=TD
     JTab.BackgroundColor3=IT JTab.TextColor3=TD
     NTab.BackgroundColor3=IT NTab.TextColor3=TD
+    SetTab.BackgroundColor3=IT SetTab.TextColor3=TD
 end
 STab.MouseButton1Click:Connect(function() hideAll() SP.Visible=true STab.BackgroundColor3=AC STab.TextColor3=Color3.fromRGB(255,255,255) end)
 FTab.MouseButton1Click:Connect(function() hideAll() FP.Visible=true FTab.BackgroundColor3=AC FTab.TextColor3=Color3.fromRGB(255,255,255) end)
 JTab.MouseButton1Click:Connect(function() hideAll() JP.Visible=true JTab.BackgroundColor3=AC JTab.TextColor3=Color3.fromRGB(255,255,255) end)
 NTab.MouseButton1Click:Connect(function() hideAll() NP.Visible=true NTab.BackgroundColor3=AC NTab.TextColor3=Color3.fromRGB(255,255,255) end)
+SetTab.MouseButton1Click:Connect(function() hideAll() SetP.Visible=true SetTab.BackgroundColor3=AC SetTab.TextColor3=Color3.fromRGB(255,255,255) end)
 
 local function applySpeed()
     local c=P.Character
@@ -786,7 +972,7 @@ JRKB.MouseButton1Click:Connect(function()
     if waitJumpRestore then waitJumpRestore=false updJR() JRKB.BackgroundColor3=IT
     else waitJumpToggle=false waitJumpApply=false waitJumpRestore=true JRKB.Text="Restore Keybind: [...]" JRKB.BackgroundColor3=AC JRKB.TextColor3=Color3.fromRGB(255,255,255) end
 end)
-
+--part 6
 local function stopFly()
     if flyConn then flyConn:Disconnect() flyConn=nil end
     workspace.Gravity=savedGravity
@@ -807,11 +993,9 @@ local function startFly()
     if not root then return end
     local hum=c:FindFirstChildOfClass("Humanoid")
     if not hum then return end
-
     hum.PlatformStand=true
     savedGravity=workspace.Gravity
     workspace.Gravity=0
-
     flyConn=RS.RenderStepped:Connect(function(dt)
         if not flyOn then return end
         local cc=P.Character
@@ -819,7 +1003,6 @@ local function startFly()
         local rr=cc:FindFirstChild("HumanoidRootPart")
         if not rr then return end
         local cam=workspace.CurrentCamera
-
         local dir=Vector3.zero
         if UIS:IsKeyDown(Enum.KeyCode.W) then dir=dir+cam.CFrame.LookVector end
         if UIS:IsKeyDown(Enum.KeyCode.S) then dir=dir-cam.CFrame.LookVector end
@@ -827,13 +1010,9 @@ local function startFly()
         if UIS:IsKeyDown(Enum.KeyCode.D) then dir=dir+cam.CFrame.RightVector end
         if UIS:IsKeyDown(Enum.KeyCode.Space) then dir=dir+Vector3.new(0,1,0) end
         if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then dir=dir-Vector3.new(0,1,0) end
-
         local currentPos=rr.Position
         local newPos=currentPos
-        if dir.Magnitude>0 then
-            newPos=currentPos+dir.Unit*flySpd*dt
-        end
-
+        if dir.Magnitude>0 then newPos=currentPos+dir.Unit*flySpd*dt end
         rr.CFrame=CFrame.new(newPos, newPos+cam.CFrame.LookVector)
         rr.AssemblyLinearVelocity=Vector3.zero
         rr.AssemblyAngularVelocity=Vector3.zero
@@ -898,6 +1077,49 @@ end)
 NCKB.MouseButton1Click:Connect(function()
     if waitNoclip then waitNoclip=false updNC() NCKB.BackgroundColor3=IT
     else waitNoclip=true NCKB.Text="Noclip Keybind: [...]" NCKB.BackgroundColor3=AC NCKB.TextColor3=Color3.fromRGB(255,255,255) end
+end)
+
+local function applyTheme(newAC,newAC2)
+    AC=newAC AC2=newAC2
+    fst.Color=AC
+    STab.BackgroundColor3=AC FTab.BackgroundColor3=AC JTab.BackgroundColor3=AC NTab.BackgroundColor3=AC SetTab.BackgroundColor3=AC
+    T.TextColor3=AC2 SetTitle.TextColor3=AC2 NL.TextColor3=AC2
+    TRK.BackgroundColor3=AC
+    JTRK.BackgroundColor3=AC
+    FTRK.BackgroundColor3=flyOn and AC or Color3.fromRGB(60,60,70)
+    NCTRK.BackgroundColor3=noclipOn and AC or Color3.fromRGB(60,60,70)
+    AB.BackgroundColor3=AC
+    JAB.BackgroundColor3=AC
+    FAB.BackgroundColor3=AC
+    BgApply.BackgroundColor3=AC
+    if TabDivider then TabDivider.BackgroundColor3=AC end
+end
+PurpleBtn.MouseButton1Click:Connect(function() applyTheme(Color3.fromRGB(140,80,255),Color3.fromRGB(180,120,255)) end)
+BlueBtn.MouseButton1Click:Connect(function() applyTheme(Color3.fromRGB(60,120,200),Color3.fromRGB(100,160,240)) end)
+RedBtn.MouseButton1Click:Connect(function() applyTheme(Color3.fromRGB(200,40,40),Color3.fromRGB(240,80,80)) end)
+GreenBtn.MouseButton1Click:Connect(function() applyTheme(Color3.fromRGB(60,160,60),Color3.fromRGB(100,200,100)) end)
+
+BgApply.MouseButton1Click:Connect(function()
+    local id=BgInput.Text
+    id=id:gsub("%D","")
+    if id~="" then
+        BgImage.Image="rbxassetid://"..id
+        BgImage.Visible=true
+        BgImage.ZIndex=0
+    end
+end)
+BgRemove.MouseButton1Click:Connect(function()
+    BgImage.Image="" BgImage.Visible=false
+end)
+
+SmallBtn.MouseButton1Click:Connect(function()
+    F.Size=UDim2.new(0,250,0,440) F.Position=UDim2.new(1,-260,0.5,-220)
+end)
+MediumBtn.MouseButton1Click:Connect(function()
+    F.Size=UDim2.new(0,260,0,450) F.Position=UDim2.new(1,-270,0.5,-225)
+end)
+LargeBtn.MouseButton1Click:Connect(function()
+    F.Size=UDim2.new(0,340,0,500) F.Position=UDim2.new(1,-350,0.5,-250)
 end)
 
 UIS.InputBegan:Connect(function(i,gpe)
@@ -1044,6 +1266,11 @@ DB.MouseButton1Click:Connect(function()
     if noclipConn then noclipConn:Disconnect() end
     SG:Destroy()
 end)
+
+for _,child in ipairs(F:GetChildren()) do
+    if child~=BgImage then child.ZIndex=2 end
+end
+BgImage.ZIndex=0
 
 UIS.MouseIconEnabled=true
 UIS.MouseBehavior=Enum.MouseBehavior.Default
