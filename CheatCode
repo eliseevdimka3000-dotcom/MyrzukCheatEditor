@@ -94,16 +94,6 @@ F.Parent=SG
 local fc=Instance.new("UICorner") fc.CornerRadius=UDim.new(0,8) fc.Parent=F
 local fst=Instance.new("UIStroke") fst.Color=AC fst.Thickness=1 fst.Transparency=0.5 fst.Parent=F
 
-local BgImage=Instance.new("ImageLabel")
-BgImage.Size=UDim2.new(1,0,1,0)
-BgImage.BackgroundTransparency=1
-BgImage.Image=""
-BgImage.ScaleType=Enum.ScaleType.Crop
-BgImage.Visible=false
-BgImage.ZIndex=0
-BgImage.Parent=F
-local BgCorner=Instance.new("UICorner") BgCorner.CornerRadius=UDim.new(0,8) BgCorner.Parent=BgImage
-
 local T=Instance.new("TextLabel")
 T.Size=UDim2.new(1,0,0,32)
 T.BackgroundColor3=Color3.fromRGB(18,18,24)
@@ -164,6 +154,16 @@ local SetTab=makeTab("Settings",0.50,38,0.22)
 
 STab.BackgroundColor3=AC
 STab.TextColor3=Color3.fromRGB(255,255,255)
+
+local TabDivider=Instance.new("Frame")
+TabDivider.Size=UDim2.new(0.95,0,0,1)
+TabDivider.Position=UDim2.new(0.025,0,0,96)
+TabDivider.BackgroundColor3=AC
+TabDivider.BackgroundTransparency=0.3
+TabDivider.BorderSizePixel=0
+TabDivider.Active=false
+TabDivider.ZIndex=1
+TabDivider.Parent=F
 
 local CP=Instance.new("Frame")
 CP.Size=UDim2.new(1,0,1,-100)
@@ -680,63 +680,9 @@ local BlueBtn=makeThemeBtn("Blue",Color3.fromRGB(60,120,200),0.25,46)
 local RedBtn=makeThemeBtn("Red",Color3.fromRGB(200,40,40),0.45,46)
 local GreenBtn=makeThemeBtn("Green",Color3.fromRGB(60,160,60),0.65,46)
 
-local BgLabel=Instance.new("TextLabel")
-BgLabel.Size=UDim2.new(0.9,0,0,16)
-BgLabel.Position=UDim2.new(0.05,0,0,76)
-BgLabel.BackgroundTransparency=1
-BgLabel.Text="Background Image ID"
-BgLabel.TextColor3=TX
-BgLabel.Font=Enum.Font.GothamBold
-BgLabel.TextSize=12
-BgLabel.TextXAlignment=Enum.TextXAlignment.Left
-BgLabel.ZIndex=2
-BgLabel.Parent=SetP
-
-local BgInput=Instance.new("TextBox")
-BgInput.Size=UDim2.new(0.9,0,0,26)
-BgInput.Position=UDim2.new(0.05,0,0,96)
-BgInput.BackgroundColor3=IT
-BgInput.Text=""
-BgInput.PlaceholderText="rbxassetid://..."
-BgInput.TextColor3=TX
-BgInput.PlaceholderColor3=TD
-BgInput.Font=Enum.Font.Gotham
-BgInput.TextSize=11
-BgInput.ClearTextOnFocus=false
-BgInput.BorderSizePixel=0
-BgInput.ZIndex=2
-BgInput.Parent=SetP
-local bgic=Instance.new("UICorner") bgic.CornerRadius=UDim.new(0,4) bgic.Parent=BgInput
-
-local BgApply=Instance.new("TextButton")
-BgApply.Size=UDim2.new(0.43,0,0,24)
-BgApply.Position=UDim2.new(0.05,0,0,128)
-BgApply.BackgroundColor3=GR
-BgApply.Text="Apply"
-BgApply.TextColor3=Color3.fromRGB(255,255,255)
-BgApply.Font=Enum.Font.GothamBold
-BgApply.TextSize=11
-BgApply.BorderSizePixel=0
-BgApply.ZIndex=2
-BgApply.Parent=SetP
-local bgac=Instance.new("UICorner") bgac.CornerRadius=UDim.new(0,4) bgac.Parent=BgApply
-
-local BgRemove=Instance.new("TextButton")
-BgRemove.Size=UDim2.new(0.43,0,0,24)
-BgRemove.Position=UDim2.new(0.52,0,0,128)
-BgRemove.BackgroundColor3=RD
-BgRemove.Text="Remove"
-BgRemove.TextColor3=Color3.fromRGB(255,255,255)
-BgRemove.Font=Enum.Font.GothamBold
-BgRemove.TextSize=11
-BgRemove.BorderSizePixel=0
-BgRemove.ZIndex=2
-BgRemove.Parent=SetP
-local bgrc=Instance.new("UICorner") bgrc.CornerRadius=UDim.new(0,4) bgrc.Parent=BgRemove
-
 local ScaleLabel=Instance.new("TextLabel")
 ScaleLabel.Size=UDim2.new(0.9,0,0,16)
-ScaleLabel.Position=UDim2.new(0.05,0,0,164)
+ScaleLabel.Position=UDim2.new(0.05,0,0,76)
 ScaleLabel.BackgroundTransparency=1
 ScaleLabel.Text="GUI Scale"
 ScaleLabel.TextColor3=TX
@@ -746,9 +692,9 @@ ScaleLabel.TextXAlignment=Enum.TextXAlignment.Left
 ScaleLabel.ZIndex=2
 ScaleLabel.Parent=SetP
 
-local SmallBtn=makeThemeBtn("Small",Color3.fromRGB(60,60,70),0.05,184)
-local MediumBtn=makeThemeBtn("Medium",Color3.fromRGB(60,60,70),0.25,184)
-local LargeBtn=makeThemeBtn("Large",Color3.fromRGB(60,60,70),0.45,184)
+local SmallBtn=makeThemeBtn("Small",Color3.fromRGB(60,60,70),0.05,96)
+local MediumBtn=makeThemeBtn("Medium",Color3.fromRGB(60,60,70),0.25,96)
+local LargeBtn=makeThemeBtn("Large",Color3.fromRGB(60,60,70),0.45,96)
 --part 5
 local DB=Instance.new("TextButton")
 DB.Size=UDim2.new(0.9,0,0,26)
@@ -766,7 +712,7 @@ local dbc=Instance.new("UICorner") dbc.CornerRadius=UDim.new(0,5) dbc.Parent=DB
 local UB=Instance.new("TextButton")
 UB.Size=UDim2.new(0.9,0,0,26)
 UB.Position=UDim2.new(0.05,0,1,-32)
-UB.BackgroundColor3=YL
+UB.BackgroundColor3=AC
 UB.Text="Updates"
 UB.TextColor3=Color3.fromRGB(0,0,0)
 UB.Font=Enum.Font.GothamBold
@@ -792,7 +738,7 @@ local UT=Instance.new("TextLabel")
 UT.Size=UDim2.new(1,0,0,32)
 UT.BackgroundColor3=Color3.fromRGB(18,18,24)
 UT.Text="UPDATES"
-UT.TextColor3=AC2
+UT.TextColor3=Color3.fromRGB(255,255,255)
 UT.Font=Enum.Font.GothamBold
 UT.TextSize=13
 UT.BorderSizePixel=0
@@ -828,7 +774,7 @@ UText.Parent=UList
 local UClose=Instance.new("TextButton")
 UClose.Size=UDim2.new(0.9,0,0,26)
 UClose.Position=UDim2.new(0.05,0,1,-34)
-UClose.BackgroundColor3=RD
+UClose.BackgroundColor3=AC
 UClose.Text="Close"
 UClose.TextColor3=Color3.fromRGB(255,255,255)
 UClose.Font=Enum.Font.GothamBold
@@ -972,7 +918,7 @@ JRKB.MouseButton1Click:Connect(function()
     if waitJumpRestore then waitJumpRestore=false updJR() JRKB.BackgroundColor3=IT
     else waitJumpToggle=false waitJumpApply=false waitJumpRestore=true JRKB.Text="Restore Keybind: [...]" JRKB.BackgroundColor3=AC JRKB.TextColor3=Color3.fromRGB(255,255,255) end
 end)
---part 6
+--part 6.1
 local function stopFly()
     if flyConn then flyConn:Disconnect() flyConn=nil end
     workspace.Gravity=savedGravity
@@ -1091,26 +1037,16 @@ local function applyTheme(newAC,newAC2)
     AB.BackgroundColor3=AC
     JAB.BackgroundColor3=AC
     FAB.BackgroundColor3=AC
-    BgApply.BackgroundColor3=AC
-    if TabDivider then TabDivider.BackgroundColor3=AC end
+    TabDivider.BackgroundColor3=AC
+    UB.BackgroundColor3=AC
+    UB.TextColor3=Color3.fromRGB(0,0,0)
+    UClose.BackgroundColor3=AC
+    ufst.Color=AC
 end
 PurpleBtn.MouseButton1Click:Connect(function() applyTheme(Color3.fromRGB(140,80,255),Color3.fromRGB(180,120,255)) end)
 BlueBtn.MouseButton1Click:Connect(function() applyTheme(Color3.fromRGB(60,120,200),Color3.fromRGB(100,160,240)) end)
 RedBtn.MouseButton1Click:Connect(function() applyTheme(Color3.fromRGB(200,40,40),Color3.fromRGB(240,80,80)) end)
 GreenBtn.MouseButton1Click:Connect(function() applyTheme(Color3.fromRGB(60,160,60),Color3.fromRGB(100,200,100)) end)
-
-BgApply.MouseButton1Click:Connect(function()
-    local id=BgInput.Text
-    id=id:gsub("%D","")
-    if id~="" then
-        BgImage.Image="rbxassetid://"..id
-        BgImage.Visible=true
-        BgImage.ZIndex=0
-    end
-end)
-BgRemove.MouseButton1Click:Connect(function()
-    BgImage.Image="" BgImage.Visible=false
-end)
 
 SmallBtn.MouseButton1Click:Connect(function()
     F.Size=UDim2.new(0,250,0,440) F.Position=UDim2.new(1,-260,0.5,-220)
@@ -1121,7 +1057,7 @@ end)
 LargeBtn.MouseButton1Click:Connect(function()
     F.Size=UDim2.new(0,340,0,500) F.Position=UDim2.new(1,-350,0.5,-250)
 end)
-
+--part 6.2
 UIS.InputBegan:Connect(function(i,gpe)
     if gpe then return end
     if waitToggle then
@@ -1266,11 +1202,6 @@ DB.MouseButton1Click:Connect(function()
     if noclipConn then noclipConn:Disconnect() end
     SG:Destroy()
 end)
-
-for _,child in ipairs(F:GetChildren()) do
-    if child~=BgImage then child.ZIndex=2 end
-end
-BgImage.ZIndex=0
 
 UIS.MouseIconEnabled=true
 UIS.MouseBehavior=Enum.MouseBehavior.Default
